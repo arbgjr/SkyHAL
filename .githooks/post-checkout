@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+pwsh ./.scripts/post-checkout-setup.ps1
