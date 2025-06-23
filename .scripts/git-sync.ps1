@@ -7,10 +7,27 @@ foreach ($level in $envVars) {
 #region Variáveis e Pré-Checagens
 $usuario = $env:GITHUB_USERNAME
 $pat = $env:GITHUB_PAT
-$msg = $env:GIT_COMMIT_MSG
+
+#region Mensagem de Commit via Arquivo
+$commitMsgFile = $env:GIT_COMMIT_MSG_FILE
+$msg = $null
 
 if (-not $usuario -or -not $pat) {
     Write-Host ('{"level":"Error","msg":"Variáveis de ambiente GITHUB_USERNAME e/ou GITHUB_PAT não definidas."}')
+    exit 1
+}
+
+if (-not $commitMsgFile) {
+    Write-Host ('{"level":"Error","msg":"Variável de ambiente GIT_COMMIT_MSG_FILE não definida."}')
+    exit 1
+}
+if (-not (Test-Path $commitMsgFile)) {
+    Write-Host ('{"level":"Error","msg":"Arquivo de mensagem de commit não encontrado: ' + $commitMsgFile + '"}')
+    exit 1
+}
+$msg = Get-Content $commitMsgFile -Raw
+if ([string]::IsNullOrWhiteSpace($msg)) {
+    Write-Host ('{"level":"Error","msg":"Arquivo de mensagem de commit está vazio: ' + $commitMsgFile + '"}')
     exit 1
 }
 
@@ -58,52 +75,79 @@ Write-Host ('{"level":"Info","msg":"Iniciando sync local-remoto..."}')
 & $gitPath remote set-url origin $remote
 if ($LASTEXITCODE -ne 0) {
     Write-Host ('{"level":"Error","msg":"Falha ao configurar remote."}')
+    & $gitPath remote set-url origin https://github.com/arbgjr/SkyHAL.git
     exit 1
 }
 #endregion
 
 #region Add & Commit
-# Verificar se há conflitos não resolvidos antes de tentar commitar
-$conflicts = & $gitPath ls-files --unmerged
-if ($conflicts) {
-    Write-Host ('{"level":"Error","msg":"Existem arquivos em conflito não resolvidos. Resolva os conflitos, faça git add/rm e tente novamente."}')
+try {
+    # Verificar se há conflitos não resolvidos antes de tentar commitar
+    $conflicts = & $gitPath ls-files --unmerged
+    if ($conflicts) {
+        Write-Host ('{"level":"Error","msg":"Existem arquivos em conflito não resolvidos. Resolva os conflitos, faça git add/rm e tente novamente."}')
+        throw "Conflitos não resolvidos"
+    }
+
+    & $gitPath add .
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ('{"level":"Error","msg":"Falha ao adicionar arquivos ao stage."}')
+        throw "Erro ao adicionar arquivos"
+    }
+
+    & $gitPath commit -m "$msg"
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host ('{"level":"Info","msg":"Commit realizado com sucesso."}')
+    } elseif ($LASTEXITCODE -eq 1) {
+        Write-Host ('{"level":"Info","msg":"Nada para commitar."}')
+    } else {
+        Write-Host ('{"level":"Error","msg":"Falha ao commitar alterações. Verifique se há conflitos não resolvidos."}')
+        throw "Erro ao commitar"
+    }
+} catch {
+    & $gitPath remote set-url origin https://github.com/arbgjr/SkyHAL.git
+    Write-Host ('{"level":"Warning","msg":"Remote restaurado após erro."}')
     exit 1
 }
-
-& $gitPath add .
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ('{"level":"Error","msg":"Falha ao adicionar arquivos ao stage."}')
-    exit 1
-}
-
-& $gitPath commit -m "$msg"
-if ($LASTEXITCODE -eq 0) {
-    Write-Host ('{"level":"Info","msg":"Commit realizado com sucesso."}')
-} elseif ($LASTEXITCODE -eq 1) {
-    Write-Host ('{"level":"Info","msg":"Nada para commitar."}')
-} else {
-    Write-Host ('{"level":"Error","msg":"Falha ao commitar alterações. Verifique se há conflitos não resolvidos."}')
-    exit 1
-}
-
 #endregion
 
 #region Pull --rebase
-& $gitPath pull $remote main --rebase
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ('{"level":"Error","msg":"Falha ao fazer pull --rebase."}')
+try {
+    & $gitPath pull $remote main --rebase
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ('{"level":"Error","msg":"Falha ao fazer pull --rebase."}')
+        throw "Erro no pull --rebase"
+    }
+    Write-Host ('{"level":"Info","msg":"Rebase concluído com sucesso."}')
+} catch {
+    & $gitPath remote set-url origin https://github.com/arbgjr/SkyHAL.git
+    Write-Host ('{"level":"Warning","msg":"Remote restaurado após erro."}')
     exit 1
 }
-Write-Host ('{"level":"Info","msg":"Rebase concluído com sucesso."}')
 #endregion
 
 #region Push
-& $gitPath push
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ('{"level":"Error","msg":"Falha ao fazer push para o remoto."}')
+try {
+    & $gitPath push
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ('{"level":"Error","msg":"Falha ao fazer push para o remoto."}')
+        throw "Erro no push"
+    }
+    Write-Host ('{"level":"Info","msg":"Push realizado com sucesso."}')
+    # Limpar arquivo de commit após sucesso
+    try {
+        if ($commitMsgFile -and (Test-Path $commitMsgFile)) {
+            Clear-Content $commitMsgFile
+            Write-Host ('{"level":"Info","msg":"Arquivo de commit limpo com sucesso."}')
+        }
+    } catch {
+        Write-Host ('{"level":"Warning","msg":"Falha ao limpar arquivo de commit: ' + $commitMsgFile + '"}')
+    }
+} catch {
+    & $gitPath remote set-url origin https://github.com/arbgjr/SkyHAL.git
+    Write-Host ('{"level":"Warning","msg":"Remote restaurado após erro."}')
     exit 1
 }
-Write-Host ('{"level":"Info","msg":"Push realizado com sucesso."}')
 #endregion
 
 #region Restaurar Remote

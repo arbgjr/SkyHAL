@@ -15,19 +15,55 @@
             "problemMatcher": []
         },
         {
-            "label": "Build (com sync)",
-            "dependsOn": [
-                "Sincronizar Git Local-Remoto"
-            ],
+            "label": "Build (cross-platform)",
             "type": "shell",
-            "command": "echo",
-            "args": [
-                "Build executado após sincronização do git."
-            ],
+            "windows": {
+                "command": "pwsh",
+                "args": ["-File", "${workspaceFolder}/.scripts/build.ps1"]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": ["${workspaceFolder}/.scripts/build.sh"]
+            },
             "presentation": {
                 "panel": "shared"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Testes (cross-platform)",
+            "type": "shell",
+            "windows": {
+                "command": "pwsh",
+                "args": ["-File", "${workspaceFolder}/.scripts/test.ps1"]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": ["${workspaceFolder}/.scripts/test.sh"]
+            },
+            "presentation": {
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "group": "test"
+        },
+        {
+            "label": "Lint (cross-platform)",
+            "type": "shell",
+            "windows": {
+                "command": "pwsh",
+                "args": ["-File", "${workspaceFolder}/.scripts/lint.ps1"]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": ["${workspaceFolder}/.scripts/lint.sh"]
+            },
+            "presentation": {
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "group": "test"
         },
        {
             "label": "Validar Integrações de Arquivos",
@@ -64,21 +100,24 @@
             "problemMatcher": []
         },
         {
-            "label": "Consultar Memory Bank",
+            "label": "Memory Bank: Consultar Status",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "Write-Host 'Memory Bank Status:'; Write-Host '=================='; Get-ChildItem -Path 'memory-bank' -Filter '*.md' | ForEach-Object { Write-Host \"$($_.Name):\" -ForegroundColor Yellow; Get-Content $_.FullName | Select-Object -First 3; Write-Host '' }"
-            ],
-            "group": "build",
+            "windows": {
+                "command": "pwsh",
+                "args": ["-File", "${workspaceFolder}/.scripts/memory-bank-status.ps1"]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": ["${workspaceFolder}/.scripts/memory-bank-status.sh"]
+            },
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
                 "panel": "shared"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": "build"
         },
         {
             "label": "Verificar Integração Memory Bank",
