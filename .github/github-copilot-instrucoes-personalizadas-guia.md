@@ -72,7 +72,7 @@ Este é um arquivo de instruções para todo o repositório que se aplica a toda
 - As instruções não são visíveis diretamente no chat, mas influenciam as respostas do Copilot
 - Você pode verificar se as instruções foram usadas verificando a lista de Referências em uma resposta
 
-### Arquivos .instructions.md
+### Arquivos ```.instructions.md```
 
 Estes são arquivos de instruções específicos para tarefas que podem ser configurados para serem incluídos para arquivos ou pastas específicas.
 
@@ -110,7 +110,7 @@ applyTo: "src/components/**"
 - Mantenha estilos específicos de componentes junto ao componente
 ```
 
-### Arquivos .prompt.md
+### Arquivos ```.prompt.md```
 
 Arquivos de prompt permitem que você salve instruções de prompts comuns em arquivos Markdown que você pode reutilizar em conversas.
 
@@ -151,9 +151,73 @@ O componente deve:
 3. Opcionalmente adicione detalhes específicos para sua solicitação atual
 4. Envie o prompt de chat
 
+### Arquivos ```.chatmode.md```
+Modos de chat internos permitem que você forneça configurações de uso geral para chat no VS Code em arquivos Markdown que você pode criar e reutilizar seus próprios modos de chat.
+
+#### Propósito
+- Definir modos de chat customizados com instruções e ferramentas específicas para fluxos como planejamento, revisão, etc.
+- Permitir restringir ferramentas e orientar o comportamento do LLM.
+- Utilizar arquivos de instruções e ferramentas (```toolsets```) em seu arquivo de modo de chat personalizado.
+
+#### Configuração
+1. Use o comando `Chat: Configure Chat Modes` para criar `.chatprompt.md`.
+2. Um arquivo de modo de chat é um arquivo Markdown com o sufixo. Tem as duas seções principais a seguir:```.chatmode.md```
+    - Cabeçalho de metadados da matéria frontal:
+      - ```description```: Uma breve descrição do modo de bate-papo. Essa descrição é exibida quando você passa o mouse sobre o modo de bate-papo na lista suspensa do modo de bate-papo na visualização de bate-papo.
+      - ```tools```: Uma lista de nomes de ferramentas ou conjuntos de ferramentas que estão disponíveis para este modo de chat. Isso pode incluir ferramentas integradas, conjuntos de ferramentas, ferramentas MCP ou ferramentas contribuídas por extensões. Use a ação Configurar Ferramentas para selecionar as ferramentas na lista de ferramentas disponíveis em seu espaço de trabalho.
+    - Corpo com instruções do modo de bate-papo
+    
+      É aqui que você fornece prompts específicos, diretrizes ou qualquer outra informação relevante que deseja que a IA siga neste modo de bate-papo. Você também pode fazer referência a arquivos de instruções usando links Markdown. As instruções do modo de bate-papo complementarão o que for especificado no prompt de bate-papo.
+3. Armazene-os em uma pasta designada (comumente `.github/chatmodes`)
+
+#### Exemplo de Conteúdo
+  ```markdown
+    ---
+    description: Generate an implementation plan for new features or refactoring existing code.
+    tools: ['codebase', 'fetch', 'findTestFiles', 'githubRepo', 'search', 'usages']
+    ---
+    # Planning mode instructions
+    You are in planning mode. Your task is to generate an implementation plan for a new feature or for refactoring existing code.
+    Don't make any code edits, just generate a plan.
+
+    The plan consists of a Markdown document that describes the implementation plan, including the following sections:
+
+    * Overview: A brief description of the feature or refactoring task.
+    * Requirements: A list of requirements for the feature or refactoring task.
+    * Implementation Steps: A detailed list of steps to implement the feature or refactoring task.
+    * Testing: A list of tests that need to be implemented to verify the feature or refactoring task.
+  ```
+
 ## Configurações do VS Code para GitHub Copilot
 
 Você pode personalizar o comportamento do Copilot através das configurações do VS Code. Aqui estão as principais configurações:
+
+### Toolsets
+É possível agrupar ferramentas em "tool sets" para uso em modo agente ou chat. Permite ativar/desativar grupos de ferramentas rapidamente e referenciá-los por `#nome-do-toolset` no chat. Elas podem ser criadas via comando `Configure Tool Sets > Create new tool sets file`.
+Um arquivo de toolsets é um arquivo armazenado em seu perfil de usuário ```jsonc```
+Um arquivo de toolsets tem a seguinte estrutura:
+    - ```<tool set name>```: nome do conjunto de ferramentas, que é exibido no seletor de ferramentas e ao fazer referência ao conjunto de ferramentas em seu prompt.
+    - ```tools```: lista de nomes de ferramentas incluídos no conjunto de ferramentas. As ferramentas podem ser ferramentas integradas, ferramentas MCP ou ferramentas contribuídas por extensões.
+    - ```description```: breve descrição do conjunto de ferramentas. Essa descrição é exibida ao lado do nome do conjunto de ferramentas no seletor de ferramentas.
+    - ```icon```: para o conjunto de ferramentas, os valores podem ser encontrados na [Referência de ícone do produto](https://code.visualstudio.com/api/references/icons-in-labels).
+  - Exemplo de configuração:
+```json
+    {
+      "reader": {
+        "tools": [
+          "changes",
+          "codebase",
+          "fetch",
+          "findTestFiles",
+          "githubRepo",
+          "problems",
+          "usages"
+        ],
+        "description": "description",
+        "icon": "tag"
+      }
+    }
+```
 
 ### Configurações Gerais
 ```json
@@ -162,17 +226,99 @@ Você pode personalizar o comportamento do Copilot através das configurações 
   "github.copilot.editor.enableCodeActions": true,
   "github.copilot.renameSuggestions.triggerAutomatically": true,
   "chat.commandCenter.enabled": true,
-  "github.copilot.chat.followUps": true
+  "github.copilot.chat.followUps": true,
+  "chat.agent.enabled": true,
+  "chat.mcp.enabled": true,
+  "chat.mcp.configFile": "${workspaceFolder}/.vscode/mcp.json",
+  "chat.agent.maxRequests": 20,
+  "github.copilot.chat.agent.runTasks": true,
+  "github.copilot.chat.agent.autoFix": true,
+  "github.copilot.chat.editRequests.enabled": true,
+  "github.copilot.chat.agent.mode": "agentic",
+  "github.copilot.chat.models": {
+    "preferredModels": [
+      "claude-3.5-sonnet",
+      "gpt-4-turbo"
+    ]
+  },
+  "github.copilot.chat.ignoreFiles": [
+    "**/.env*",
+    "**/secrets.*",
+    "**/credentials.*"
+  ],
+  "github.copilot.chat.edits.temporalContext.enabled": true,
+  "github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": true,
+  "chat.implicitContext.enabled": {
+    "chatSelection": "always",
+    "editor": "always"
+  },
+  "github.copilot.chat.agent.thinkingTool": true,
+  "inlineChat.lineNaturalLanguageHint": true,
+  "chat.tools.autoApprove": false,
+  "github.copilot.chat.followUps": "always",
+  "github.copilot.chat.scopeSelection": true,
+  "chat.detectParticipant.enabled": true,
+  "github.copilot.chat.codesearch.enabled": true,
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.chat.terminalChatLocation": "chatView",
+  "inlineChat.acceptedOrDiscardBeforeSave": "warn",
+  "chat.editing.confirmEditRequestRemoval": true,
+  "chat.editing.confirmEditRequestRetry": true,
+  "chat.editing.autoAcceptDelay": 15,
+  "inlineChat.finishOnType": true,
+  "inlineChat.holdToSpeech": true,
+  "inlineChat.lineEmptyHint": true,
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.nextEditSuggestions.fixes": true,
+  "github.copilot.editor.enableCodeActions": true,
+  "chat.sendElementsToChat.enabled": true,
+  "chat.sendElementsToChat.attachCSS": true,
+  "chat.sendElementsToChat.attachImages": true,
+  "chat.commandCenter.enabled": true,
+  "chat.edits2.enabled": true,
+  "github.copilot.chat.newWorkspaceCreation.enabled": false,
+  "github.copilot.chat.editor.temporalContext.enabled": true,
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": true,
+    "windsurf": true,
+    "cursor-global": true,
+    "cursor-workspace": true
+  },
+  "github.copilot.chat.agent.enabled": true,
+  "github.copilot.chat.enable": true,
+  "github.copilot.chat.search.semanticTextResults": true,
+  "chat.setupFromDialog": false,
+  "github.copilot.suggestSettings": true,
+  "github.copilot.chat.runCommand.enabled": false
 }
 ```
 
-### Configurações de Arquivos de Instruções
+### Configurações de Arquivos de Prompts
 ```json
 {
   "chat.promptFiles": true,
   "chat.promptFilesLocations": [
     ".github/prompts"
   ]
+}
+```
+
+### Configurações de Arquivos de modo de chat
+```json
+{
+    "chat.modeFilesLocations": {
+        ".github/chatmodes": true
+    }
+}
+```
+
+### Configurações de Arquivos de Instruções
+```json
+{
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "chat.instructionsFilesLocations": {
+        ".github/instructions": true
+    }
 }
 ```
 
@@ -302,6 +448,8 @@ Você pode personalizar o comportamento do Copilot através das configurações 
 6. [Regras para Melhor Geração de Código](https://www.reddit.com/r/vibecoding/comments/1l0ynlv/rules_i_give_claude_to_get_better_code_curious/)
 7. [Economize Horas com Instruções Personalizadas](https://www.linkedin.com/pulse/save-hours-giving-github-copilot-custom-instructions-code-raymon-s-j4tke/)
 8. [Referência de Configurações do VS Code para Copilot](https://code.visualstudio.com/docs/copilot/reference/copilot-settings)
+9. [Custom chat modes](https://code.visualstudio.com/docs/copilot/chat/chat-modes)
+10. [Definindo toolsets](https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode#_define-tool-sets)
 
 ---
 
