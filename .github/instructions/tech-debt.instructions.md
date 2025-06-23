@@ -317,3 +317,20 @@ Para cada débito técnico, utilize o seguinte formato:
   - A configuração legada `OutputMessageTopic: "MensagensDisponiveis"` permanece para compatibilidade com outros fluxos
 
 ---
+
+### TD009 - Testes e Logging dos Scripts de Onboarding
+
+- **Data Identificado**: 2025-06-23
+- **Identificado Por**: @copilot
+- **Componente(s) Afetado(s)**: Scripts PowerShell de onboarding (`.scripts/post-checkout-setup.ps1`, `.scripts/install-mcp-packages.ps1`), automação de testes (`tests/test_scripts_onboarding.ps1`)
+- **Descrição do Débito**: O script de teste automatizado cobre apenas execução superficial dos scripts de onboarding, sem simular falhas de dependências externas (Node, NPM, permissões, rede). Os scripts utilizam apenas `Write-Host` para logging, sem logs estruturados em arquivo ou formato JSON.
+- **Motivo da Decisão Atual**: Priorização da entrega do fluxo dinâmico e validação básica de funcionamento. Implementação de mocks e logging estruturado demandaria tempo adicional.
+- **Impacto Potencial/Riscos**: Diagnóstico limitado em pipelines, baixa rastreabilidade de falhas, cobertura de testes insuficiente para cenários de erro.
+- **Sugestão de Solução Ideal**: Implementar mocks para dependências externas nos testes, validar estado do ambiente após execução, adotar logging estruturado (JSON) nos scripts para integração com pipelines e observabilidade.
+- **Prioridade Estimada**: Média
+- **Status**: Aberto
+- **Issue/Task Relacionada**: 
+- **Data de Resolução (se aplicável)**: 
+- **Notas Adicionais**: Atualizar este registro ao evoluir a cobertura de testes ou logging dos scripts.
+
+---

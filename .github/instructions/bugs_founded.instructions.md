@@ -97,4 +97,42 @@ Testes de compatibilidade cross-browser foram reforçados para a funcionalidade 
 
 ---
 
+### BUG002 - Falha de Lint em Bloco de Código Markdown
+
+- **Data Identificado**: 2025-06-23
+- **Identificado Por**: @copilot
+- **Componente(s) Afetado(s)**: Documentação (`docs/onboarding.md`)
+- **Gravidade**: Baixa
+- **Prioridade**: Baixa
+- **Status**: Novo
+
+**Descrição do Bug**:
+Lint MD031 acusa ausência de linha em branco antes/depois de bloco de código powershell em `docs/onboarding.md`.
+
+**Passos para Reproduzir**:
+1. Executar linter markdown no arquivo `docs/onboarding.md`.
+2. Observar warning MD031/blanks-around-fences.
+
+**Ambiente (se aplicável)**:
+- Sistema Operacional: Windows/Linux
+- Ferramenta: Markdown Lint
+
+**Impacto do Bug**:
+Nenhum impacto funcional, apenas warning de formatação.
+
+**Solução Aplicada (se corrigido)**:
+Ajustar espaçamento em torno de blocos de código markdown.
+
+- **Data da Correção**: 
+- **Corrigido Por**: 
+- **Commit/PR da Correção**: 
+
+**Causa Raiz (opcional, se conhecida)**:
+Geração automática do markdown sem linha em branco antes/depois do bloco de código.
+
+**Notas Adicionais**:
+Sem impacto em build ou execução dos scripts.
+
+---
+
 _(Adicione novos bugs abaixo desta linha, seguindo o formato)_

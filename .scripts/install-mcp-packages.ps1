@@ -18,29 +18,52 @@ try {
     exit 1
 }
 
-# Lista de pacotes MCP para instalar
-$mcpPackages = @(
-    "@modelcontextprotocol/server-github",
-    "@modelcontextprotocol/server-filesystem",
-    "@modelcontextprotocol/server-memory",
-    "@modelcontextprotocol/server-sequential-thinking",
-    "@modelcontextprotocol/server-everything"
-)
+# Instalação dinâmica dos pacotes MCP a partir de .vscode/mcp.json
+$mcpConfigFile = Join-Path $PSScriptRoot "..\.vscode\mcp.json"
+if (-Not (Test-Path $mcpConfigFile)) {
+    Write-Host "❌ Arquivo de configuração MCP não encontrado: $mcpConfigFile" -ForegroundColor Red
+    exit 1
+}
 
-# Tentar instalar os pacotes MCP
-foreach ($pkg in $mcpPackages) {
-    Write-Host "`nInstalando $pkg..." -ForegroundColor Cyan
-    try {
-        & npm install -g $pkg
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "✅ $pkg instalado globalmente com sucesso!" -ForegroundColor Green
-        } else {
-            Write-Host "❌ Falha ao instalar $pkg. Código de saída: $LASTEXITCODE" -ForegroundColor Red
-        }
-    } catch {
-        Write-Host ("❌ Erro ao instalar " + $pkg + ":") -ForegroundColor Red
-        Write-Host "   $($_.Exception.Message)" -ForegroundColor Red
+try {
+    $mcpJson = Get-Content $mcpConfigFile -Raw | ConvertFrom-Json
+    if (-not $mcpJson.servers) {
+        Write-Host "❌ Nenhum servidor MCP encontrado em $mcpConfigFile" -ForegroundColor Red
+        exit 1
     }
+    $mcpPackages = @()
+    foreach ($srv in $mcpJson.servers.PSObject.Properties) {
+        $cmd = $srv.Value.command
+        $srvArgs = $srv.Value.args
+        # Detecta pacotes npm do comando npx
+        if ($cmd -eq "npx" -and $srvArgs.Count -ge 2) {
+            $pkg = $srvArgs[1]
+            if ($pkg -like "@modelcontextprotocol/*") {
+                $mcpPackages += $pkg
+            }
+        }
+    }
+    $mcpPackages = $mcpPackages | Select-Object -Unique
+    if ($mcpPackages.Count -eq 0) {
+        Write-Host "[WARN] Nenhum pacote MCP detectado para instalação." -ForegroundColor Yellow
+        exit 0
+    }
+    foreach ($pkg in $mcpPackages) {
+        Write-Host ("[INFO] Instalando pacote MCP: {0}" -f $pkg) -ForegroundColor Cyan
+        try {
+            & npm install -g $pkg
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host ("[OK] {0} instalado globalmente." -f $pkg) -ForegroundColor Green
+            } else {
+                Write-Host ("[ERRO] Falha ao instalar {0}. Código de saída: {1}" -f $pkg, $LASTEXITCODE) -ForegroundColor Red
+            }
+        } catch {
+            Write-Host ("[ERRO] Exceção ao instalar {0}: {1}" -f $pkg, $_.Exception.Message) -ForegroundColor Red
+        }
+    }
+} catch {
+    Write-Host ("[ERRO] Falha ao processar {0}: {1}" -f $mcpConfigFile, $_.Exception.Message) -ForegroundColor Red
+    exit 1
 }
 
 # Verificar se uvicorn também está instalado (para uvx)
