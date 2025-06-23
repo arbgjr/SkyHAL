@@ -33,6 +33,7 @@ Este é um arquivo de instruções para todo o repositório que se aplica a toda
 - Estabelece padrões e práticas globais de codificação
 - Aplica-se automaticamente a todas as interações com o Copilot no repositório
 - Garante consistência entre membros da equipe
+- Um arquivo de instruções é um arquivo Markdown com o sufixo ".instructions.md" no nome do arquivo.
 
 #### Configuração
 1. Crie uma pasta `.github` na raiz do seu repositório (se não existir)
@@ -41,6 +42,9 @@ Este é um arquivo de instruções para todo o repositório que se aplica a toda
 
 #### Exemplo de Conteúdo
 ```markdown
+---
+applyTo: "**"
+---
 # Padrões de Codificação
 
 ## Geral
@@ -85,6 +89,21 @@ Estes são arquivos de instruções específicos para tarefas que podem ser conf
 1. Crie arquivos `.instructions.md` em diretórios relevantes
 2. Adicione os metadados `applyTo` no topo do arquivo para especificar a quais arquivos se aplica
 3. Configure o VS Code para usar arquivos de instruções (configurações abordadas mais adiante)
+4. Um arquivo de instruções é um arquivo Markdown com o sufixo ".instructions.mds" no nome do arquivo.
+5. O arquivo de instruções consiste em duas seções:
+  - (Opcional) Cabeçalho com metadados (sintaxe Front Matter)
+    - ```description```: Uma breve descrição do arquivo de instruções. Esta descrição é exibida quando você passa o mouse sobre o arquivo de instruções na visualização de bate-papo.
+    - ```applyTo```: Para aplicar automaticamente arquivos de instruções, especifique a propriedade de metadados ```applyTo``` no arquivo de instruções:  
+      - ```**```: Aplique as instruções para todas as solicitações de bate-papo.
+      - ```<glob pattern>```: Aplique as instruções com base nos tipos de arquivos que estão no contexto do bate-papo
+
+#### Dicas para definir instruções personalizadas
+- Mantenha suas instruções curtas e concisas. Cada instrução deve ser uma declaração única e simples. Se precisar fornecer várias informações, use instruções múltiplas.
+- Não faça referência a recursos externos nas instruções, como padrões de codificação específicos.
+- Divida as instruções em vários arquivos. Essa abordagem é útil para organizar instruções por tópico ou tipo de tarefa.
+- Facilite o compartilhamento de instruções personalizadas com sua equipe ou entre projetos, armazenando-as em arquivos de instruções. Você também pode controlar a versão dos arquivos para acompanhar as alterações ao longo do tempo.
+- Use a propriedade applyTo no cabeçalho do arquivo de instruções para aplicar automaticamente as instruções a arquivos ou pastas específicos.
+- Faça referência a instruções personalizadas em seus arquivos de prompt para mantê-los limpos e focados e para evitar duplicar instruções para tarefas diferentes.
 
 #### Exemplo de Conteúdo
 ```markdown
@@ -112,7 +131,7 @@ applyTo: "src/components/**"
 
 ### Arquivos ```.prompt.md```
 
-Arquivos de prompt permitem que você salve instruções de prompts comuns em arquivos Markdown que você pode reutilizar em conversas.
+Arquivos de prompt são prompts reutilizáveis ​​para tarefas comuns, como gerar código ou realizar uma revisão de código. Você define o conteúdo do prompt em um arquivo Markdown. Um arquivo de prompt é um prompt independente que você pode executar diretamente no chat. Opcionalmente, você também pode incluir diretrizes sobre como a tarefa deve ser executada.
 
 #### Propósito
 - Armazenar templates de prompts reutilizáveis
@@ -123,9 +142,27 @@ Arquivos de prompt permitem que você salve instruções de prompts comuns em ar
 1. Habilite arquivos de prompt nas configurações do VS Code
 2. Crie arquivos com extensão `.prompt.md`
 3. Armazene-os em uma pasta designada (comumente `.github/prompts`)
+4. Um arquivo de prompt é um arquivo Markdown com o .prompt.mdsufixo "file". Ele possui as duas seções principais a seguir:
+  - (Opcional) Cabeçalho com metadados (sintaxe Front Matter)
+    - ```mode```: O modo de bate-papo a ser usado ao executar o prompt: ```ask```, ```edit```, ou ```agent```(padrão).
+    - ```tools```: Conjunto de nomes de ferramentas para indicar quais ferramentas podem ser usadas no modo agente. Se uma determinada ferramenta não estiver disponível ao executar o prompt, ela será ignorada.
+    - ```description```: Uma breve descrição do prompt.
+    - Corpo com o conteúdo do prompt
+    
+      Os arquivos de prompt imitam o formato de prompts de escrita no chat. Isso permite combinar instruções em linguagem natural, contexto adicional e até mesmo vincular outros arquivos de prompt como dependências. Você pode usar a formatação Markdown para estruturar o conteúdo do prompt, incluindo títulos, listas e blocos de código.
+5. Em um arquivo de prompt, você pode referenciar variáveis ​​usando a sintaxe ```${variableName}```. Você pode referenciar as seguintes variáveis:
+  - Variáveis ​​do espaço de trabalho - ```${workspaceFolder}```,```${workspaceFolderBasename}```
+  - Variáveis ​​de seleção - ```${selection}```,```${selectedText}```
+  - Variáveis ​​de contexto de arquivo - ```${file}```, ```${fileBasename}```, ```${fileDirname}```,```${fileBasenameNoExtension}```
+  - Variáveis ​​de entrada - ```${input:variableName}```, ```${input:variableName:placeholder}```(passar valores para o prompt do campo de entrada do chat
 
 #### Exemplo de Conteúdo
 ```markdown
+---
+mode: 'agent'
+tools: ['githubRepo', 'codebase']
+description: 'Generate a new React form component'
+---
 # Gerador de Componente de Formulário React
 
 Seu objetivo é gerar um novo componente de formulário React.
@@ -143,6 +180,20 @@ O componente deve:
 2. Gerenciar o envio do formulário
 3. Mostrar estado de carregamento durante o envio
 4. Mostrar mensagens de sucesso/erro após o envio
+```
+
+```markdown
+---
+mode: 'edit'
+description: 'Perform a REST API security review'
+---
+Perform a REST API security review:
+
+* Ensure all endpoints are protected by authentication and authorization
+* Validate all user inputs and sanitize data
+* Implement rate limiting and throttling
+* Implement logging and monitoring for security events
+
 ```
 
 #### Como Usar
