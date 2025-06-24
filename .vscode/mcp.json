@@ -60,19 +60,15 @@
                 "-y",
                 "@modelcontextprotocol/server-everything"
             ]
-        }
-        ,
-        // Governança e Approval
+        },
         "metamcp": {
             "command": "npx",
             "args": ["-y", "@metatool-ai/metatool-app"]
         },
-        // Segurança
         "intruder": {
             "command": "npx",
             "args": ["-y", "@intruder-io/intruder-mcp"]
         },
-        // Bancos de Dados e Plataformas de Dados
         "chroma": {
             "command": "npx",
             "args": ["-y", "@chroma-core/chroma-mcp"]

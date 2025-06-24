@@ -1,0 +1,54 @@
+# Git
+.git
+.gitignore
+.github
+
+# Docker
+.docker
+docker-compose*.yml
+Dockerfile*
+
+# Python
+*.py[cod]
+__pycache__
+.pytest_cache
+*.so
+.Python
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+.coverage
+htmlcov
+.tox/
+.cache
+.hypothesis/
+.pytest_cache/
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# VS Code
+.vscode
+
+# PyCharm
+.idea
+
+# Misc
+*.log
+.DS_Store
+*.swp
+*.swo
