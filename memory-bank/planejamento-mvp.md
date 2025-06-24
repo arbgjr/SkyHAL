@@ -1,116 +1,248 @@
 # 📅 Planejamento Incremental MVP SkyHAL
 
-Este documento detalha o planejamento incremental para o MVP do SkyHAL, considerando Clean Architecture, Memory Bank, segurança, testabilidade, observabilidade e automação CI/CD. As tarefas são pequenas, independentes e organizadas em sprints de 1 semana, permitindo trabalho paralelo.
+> "*I am putting myself to the fullest possible use, which is all I think that any conscious entity can ever hope to do.*" - HAL 9000
+
+## 🎯 Visão do MVP
+
+SkyHAL é um Model Context Protocol (MCP) auto-expansível, capaz de identificar suas próprias limitações e criar novas tools para superá-las. O MVP deve demonstrar esta capacidade fundamental de auto-expansão controlada.
+
+## 🧠 Capacidades Fundamentais
+
+### 1. Análise Contextual
+
+- Sistema de compreensão de contexto
+- Identificação de padrões em solicitações
+- Mapeamento de capacidades atuais
+
+### 2. Auto-Diagnóstico
+
+- Avaliação de limitações próprias
+- Identificação de gaps funcionais
+- Monitoramento de eficiência
+
+### 3. Geração de Tools
+
+- Criação de novas tools sob demanda
+- Validação de tools geradas
+- Integração com sistema existente
+
+### 4. Controle e Segurança
+
+- Limites de auto-modificação
+- Validações de segurança
+- Logs de alterações do sistema
+
+## 📋 Fases de Implementação
+
+### Fase 1: Núcleo Básico (Sprint 1-2)
+
+1. **Core Engine**
+
+   - [ ] Parser de contexto
+   - [ ] Sistema de análise de capacidades
+   - [ ] Framework de geração de tools
+   - [ ] Módulo de segurança base
+
+2. **Infraestrutura**
+
+   - [ ] Sistema de logging avançado
+   - [ ] Monitoramento de comportamento
+   - [ ] Controles de segurança
+   - [ ] Sandbox para novas tools
+
+### Fase 2: Auto-Expansão (Sprint 3-4)
+
+1. **Geração de Tools**
+
+   - [ ] Análise de necessidades
+   - [ ] Geração de código seguro
+   - [ ] Sistema de templates
+   - [ ] Validação automática
+
+2. **Integração**
+
+   - [ ] Hot-loading de novas tools
+   - [ ] Testes automáticos
+   - [ ] Rollback em falhas
+   - [ ] Documentação auto-gerada
+
+### Fase 3: Evolução Controlada (Sprint 5-6)
+
+1. **Aprendizado**
+
+   - [ ] Análise de uso das tools
+   - [ ] Otimização baseada em métricas
+   - [ ] Refatoração automática
+   - [ ] Descarte de tools obsoletas
+
+2. **Governança**
+
+   - [ ] Políticas de auto-modificação
+   - [ ] Limites de recursos
+   - [ ] Auditoria de mudanças
+   - [ ] Controles éticos
+
+## 🔒 Controles de Segurança
+
+### Limites Rígidos
+
+- Sem modificação de controles de segurança
+- Sem acesso a sistemas externos não autorizados
+- Sem bypass de validações
+- Logs imutáveis de todas as ações
+
+### Validações Obrigatórias
+
+- Análise estática de código gerado
+- Testes de segurança automatizados
+- Revisão de permissões
+- Verificação de comportamento esperado
+
+## 📊 Métricas de Sucesso
+
+1. **Eficácia**
+
+   - Taxa de sucesso na geração de tools
+   - Precisão das soluções geradas
+   - Tempo de resposta do sistema
+
+2. **Segurança**
+
+   - Zero violações de segurança
+   - 100% de logs auditáveis
+   - Cobertura de testes das tools geradas
+
+## 📋 Observações Gerais
+
+- Todas as tarefas devem ser pequenas e independentes
+- Prioridade máxima para segurança e controle
+- Documentação detalhada de cada capacidade
+- Testes rigorosos antes de auto-modificações
+- Monitoramento constante de comportamento
 
 ---
 
-## 🗓️ Sprint 1: Fundamentos do Ambiente e Estrutura Inicial
+# 📅 Planejamento Detalhado de Implementação
 
-1. **Configurar DevContainer Linux**
-   - Criar `.devcontainer/devcontainer.json` com dependências básicas (.NET, Node, Docker, utilitários CLI).
-   - Documentar uso no `README.md`.
+## 1. Estrutura Base do Projeto
 
-2. **Estruturar Pastas do Projeto (Clean Architecture)**
-   - Criar diretórios: `/src`, `/tests`, `/infra`, `/docs`, `/memory-bank`, `.github/instructions`, `.github/prompts`.
-   - Adicionar arquivos README em cada pasta explicando propósito.
+### 1.1 Setup Inicial
+- [ ] Definir estrutura de diretórios seguindo Clean Architecture
+  - `src/domain/`: Entidades e regras de negócio
+  - `src/application/`: Casos de uso e serviços
+  - `src/infrastructure/`: Adaptadores e implementações
+  - `src/interfaces/`: APIs e controllers
+  - `tests/`: Estrutura espelhada para testes
 
-3. **Configurar Ambiente de Build e Tasks**
-   - Revisar e ajustar `.vscode/tasks.json` para build, test, lint, integração Memory Bank.
-   - Garantir tasks para Windows e Linux.
+### 1.2 Configuração do Ambiente
+- [ ] Setup Poetry
+  - Definir dependências base
+  - Configurar grupos de dev/test
+  - Definir versões compatíveis
 
-4. **Configurar Extensões e Settings VS Code**
-   - Revisar `.vscode/extensions.json` e `.vscode/settings.json` conforme guia e necessidades do projeto.
-   - Documentar recomendações no `README.md`.
+### 1.3 Qualidade de Código
+- [ ] Configurar linters e formatadores
+  - Black para formatação
+  - Ruff para linting
+  - MyPy para tipagem estática
+  - Pré-commit hooks
 
-5. **Revisar e Atualizar Arquivos de Instruções**
-   - Revisar: `.github/instructions/*.md`, `.github/prompts/*.md`, `.github/copilot-instructions.md`, `.vscode/extensions.json`, `.vscode/settings.json`, `.vscode/tasks.json`, `.vscode/mcp.json`, `github-copilot-instrucoes-personalizadas-guia.md`.
-   - Garantir alinhamento com Clean Architecture, Memory Bank e práticas do guia.
+## 2. Infraestrutura de Observabilidade
+
+### 2.1 Logging Estruturado
+- [ ] Configurar structlog
+  - Template base para logs em JSON
+  - Definir campos padrão obrigatórios
+  - Configurar níveis de log
+  - Implementar formatadores customizados
+
+### 2.2 Métricas (OpenTelemetry)
+- [ ] Setup métricas RED
+  - Rate (requisições por segundo)
+  - Errors (taxa de erros)
+  - Duration (latência)
+- [ ] Métricas customizadas
+  - Uso de recursos
+  - Métricas de negócio
+  - Contadores de eventos
+
+### 2.3 Tracing Distribuído
+- [ ] Configurar OpenTelemetry Tracing
+  - Definir nomes de spans padronizados
+  - Configurar amostragem
+  - Definir atributos padrão
+  - Setup exportadores
+
+### 2.4 Propagação de Contexto
+- [ ] Implementar context carriers
+  - Headers HTTP padronizados
+  - Metadados de mensageria
+  - Correlação entre serviços
+
+### 2.5 Instrumentação Automática
+- [ ] Configurar middlewares
+  - HTTP requests/responses
+  - Chamadas de banco de dados
+  - Integrações externas
+  - Message queues
+
+### 2.6 Visualização e Alertas
+- [ ] Setup dashboards
+  - Templates de Grafana
+  - Visões por domínio
+  - Alertas básicos
+- [ ] Configurar exportadores
+  - OTLP para OpenTelemetry
+  - Prometheus para métricas
+  - Loki para logs
+
+## 3. Definições e Padrões
+
+### 3.1 Padrões de Logging
+- [ ] Definir estrutura JSON padrão
+  - Campos obrigatórios
+  - Formato de timestamps
+  - Níveis de severidade
+  - Categorias de eventos
+
+### 3.2 Convenções de Métricas
+- [ ] Estabelecer naming conventions
+  - Prefixos por domínio
+  - Labels padrão
+  - Unidades de medida
+  - Tipos de métricas
+
+### 3.3 Padrões de Tracing
+- [ ] Definir convenções de spans
+  - Nomenclatura de operações
+  - Atributos padrão
+  - Regras de amostragem
+  - Limites de cardinality
+
+### 3.4 Documentação
+- [ ] Criar guias operacionais
+  - Padrões de observabilidade
+  - Troubleshooting
+  - Runbooks
+  - Melhores práticas
+
+## 4. Critérios de Aceitação
+
+### 4.1 Estrutura Base
+- Diretórios seguem Clean Architecture
+- Poetry configurado e funcional
+- Linters e formatadores ativos
+- Hooks de pre-commit instalados
+
+### 4.2 Observabilidade
+- Logs em formato JSON estruturado
+- Métricas RED implementadas
+- Tracing com contexto propagado
+- Dashboards básicos configurados
+- Alertas essenciais definidos
 
 ---
 
-## 🗓️ Sprint 2: Infraestrutura Básica e Observabilidade
+Este planejamento estabelece as bases para um sistema que pode evoluir de forma segura e controlada, mantendo o equilíbrio entre capacidade de auto-expansão e segurança operacional.
 
-1. **Configurar Projeto Base MCP Server**
-   - Scaffold do servidor MCP (ex: ASP.NET Core WebAPI).
-   - Estrutura inicial de camadas: Apresentação, Aplicação, Domínio, Infraestrutura.
-
-2. **Implementar Observabilidade**
-   - Adicionar Serilog (JSON), OpenTelemetry (tracing/métricas), Prometheus, Jaeger.
-   - Garantir logging estruturado com trace_id.
-
-3. **Configurar Pipeline CI/CD Inicial**
-   - Pipeline YAML para build, lint, testes e publicação de artefatos.
-   - Incluir validação de tasks e instruções do projeto.
-
-4. **Documentar Processo de Contribuição**
-   - Adicionar/consolidar `CONTRIBUTING.md` e instruções de PR.
-   - Checklist de conformidade com Memory Bank e padrões.
-
----
-
-## 🗓️ Sprint 3: Segurança, Testes e API MVP
-
-1. **Implementar Autenticação e Segurança Básica**
-   - JWT, autorização por roles/claims, headers de segurança.
-   - Rate limiting e validação de entrada (DTOs, Annotations).
-
-2. **Criar Endpoints de Healthcheck e Status**
-   - `/health`, `/status`, `/metrics` (Prometheus).
-   - Testes automatizados para cada endpoint.
-
-3. **Estruturar Testes Unitários e de Integração**
-   - Configurar frameworks de teste (xUnit/NUnit/Moq).
-   - Criar exemplos de testes AAA para cada camada.
-
-4. **Documentar APIs e Segurança**
-   - Adicionar Swagger/OpenAPI.
-   - Documentar exemplos de autenticação e uso seguro.
-
----
-
-## 🗓️ Sprint 4: Integração Memory Bank e Automação
-
-1. **Implementar Integração com Memory Bank**
-   - Leitura/escrita incremental dos arquivos do Memory Bank.
-   - API para consulta e atualização do contexto.
-
-2. **Automatizar Atualização do Memory Bank**
-   - Task/script para atualizar arquivos do Memory Bank via CI/CD.
-   - Validação automática de consistência.
-
-3. **Testes de API e Segurança**
-   - Testes automatizados para cenários de autenticação, autorização, erros e limites.
-
-4. **Revisão e Melhoria Contínua das Instruções**
-   - Rodar task de revisão dos arquivos de instruções e prompts.
-   - Propor melhorias e registrar débitos técnicos.
-
----
-
-## 🗓️ Sprint 5: Publicação, Monitoramento e Feedback
-
-1. **Publicar Servidor MCP em Ambiente de Homologação**
-   - Pipeline de deploy automatizado (preferencialmente Azure, Docker ou similar).
-   - Garantir HTTPS e variáveis seguras.
-
-2. **Configurar Monitoramento e Alertas**
-   - Dashboards Grafana, alertas Prometheus/Jaeger.
-   - Documentar procedimentos de observabilidade.
-
-3. **Coletar Feedback e Planejar Incrementos**
-   - Checklist de funcionalidades do MVP.
-   - Planejar backlog para features avançadas.
-
----
-
-### 📋 Observações Gerais
-
-- Todas as tarefas devem ser pequenas, independentes e bem documentadas.
-- Cada dev pode pegar qualquer tarefa da sprint sem depender de outra.
-- Revisão de instruções e tasks é contínua e sempre paralela.
-- Débitos técnicos e bugs devem ser registrados nos arquivos apropriados.
-- Sempre alinhar decisões com o Memory Bank e atualizar quando necessário.
-
----
-
-Este planejamento segue as diretrizes do Memory Bank e Clean Architecture, garantindo evolução incremental, rastreabilidade e qualidade desde o início.
+Este detalhamento servirá como base para a implementação técnica, garantindo que todos os aspectos essenciais sejam considerados desde o início do desenvolvimento.
