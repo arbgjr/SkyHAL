@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # 🔍 Guia de Troubleshooting Colaborativo
 
 Este guia estabelece um processo de resolução de problemas que envolve diretamente o desenvolvedor em cada etapa, enfatizando a comunicação e colaboração.

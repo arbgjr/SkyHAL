@@ -1,5 +1,5 @@
 ---
-mode: "plan"
+mode: "agent"
 description: "Planejamento sequencial para problemas complexos"
 ---
 

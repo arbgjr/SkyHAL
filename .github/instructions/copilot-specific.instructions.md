@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # Instruções Específicas para GitHub Copilot
 
 ## Tom e Estilo de Resposta

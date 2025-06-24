@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # Registro de Débitos Técnicos
 
 Este documento rastreia os débitos técnicos identificados no projeto.
@@ -334,3 +337,120 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Notas Adicionais**: Atualizar este registro ao evoluir a cobertura de testes ou logging dos scripts.
 
 ---
+
+# 🔧 Débitos Técnicos - Registro e Priorização
+
+## 📝 Formato de Registro
+
+### Estrutura Obrigatória
+```markdown
+## [ID] - [Prioridade] - [Data]
+
+### 🎯 Descrição
+[Descrição clara do débito técnico]
+
+### 💡 Solução Ideal
+[Como deveria ser implementado]
+
+### 💥 Impacto
+- [Performance]
+- [Manutenibilidade]
+- [Escalabilidade]
+
+### 📊 Estimativa
+- **Tempo**: [x] dias
+- **Complexidade**: [Alta/Média/Baixa]
+- **Risco**: [Alto/Médio/Baixo]
+```
+
+## Débitos Ativos
+
+### TD-001 - ALTA - 2025-06-23
+
+#### 🎯 Descrição
+Uso de SQLAlchemy em modo síncrono impactando performance.
+
+#### 💡 Solução Ideal
+```python
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+engine = create_async_engine(
+    "postgresql+asyncpg://user:pass@localhost/db",
+    echo=True,
+)
+
+async def get_user(user_id: int) -> User:
+    async with AsyncSession(engine) as session:
+        result = await session.execute(
+            select(User).where(User.id == user_id)
+        )
+        return result.scalar_one_or_none()
+```
+
+#### 💥 Impacto
+- Performance: Bloqueio em I/O
+- Escalabilidade: Limite de conexões
+- Manutenibilidade: Código assíncrono misturado
+
+#### 📊 Estimativa
+- **Tempo**: 5 dias
+- **Complexidade**: Média
+- **Risco**: Médio
+
+### TD-002 - MÉDIA - 2025-06-23
+
+#### 🎯 Descrição
+Falta de tipagem estática em módulos críticos.
+
+#### 💡 Solução Ideal
+```python
+from typing import List, Optional
+from pydantic import BaseModel
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class User(BaseModel):
+    id: int
+    username: str
+    email: str
+    is_active: bool = True
+    roles: List[str] = []
+    profile: Optional[dict] = None
+```
+
+#### 💥 Impacto
+- Manutenibilidade: Difícil refatorar
+- Qualidade: Bugs em runtime
+- Produtividade: Sem autocomplete
+
+#### 📊 Estimativa
+- **Tempo**: 3 dias
+- **Complexidade**: Baixa
+- **Risco**: Baixo
+
+## 📋 Template para Novos Débitos
+
+```markdown
+### TD-[XXX] - [PRIORIDADE] - [DATA]
+
+#### 🎯 Descrição
+[Descrição clara]
+
+#### 💡 Solução Ideal
+\```python
+[Código exemplo da solução ideal]
+\``
+
+#### 💥 Impacto
+- [Item 1]
+- [Item 2]
+- [Item 3]
+
+#### 📊 Estimativa
+- **Tempo**: [x] dias
+- **Complexidade**: [nível]
+- **Risco**: [nível]
+```

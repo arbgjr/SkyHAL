@@ -1,3 +1,6 @@
+---
+mode: "agent"
+---
 # Busca Inteligente no Knowledge Graph
 
 Encontre informações específicas no contexto do projeto usando MCP.

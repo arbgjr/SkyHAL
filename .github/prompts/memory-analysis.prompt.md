@@ -1,3 +1,6 @@
+---
+mode: "agent"
+---
 # Análise de Memória com MCP
 
 Analise o contexto atual do projeto usando a ferramenta MCP memory.

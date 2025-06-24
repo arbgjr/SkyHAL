@@ -1,3 +1,6 @@
+---
+mode: "agent"
+---
 # Prompt de Observabilidade para GitHub Copilot
 
 ## Contexto

@@ -2,164 +2,116 @@
 applyTo: "**"
 ---
 
-Summarized conversation historySegue o texto do arquivo api-security.instructions.md:
-
----
-
 # 🛡️ Segurança da API - Diretrizes Específicas
 
 ## 🎯 Para GitHub Copilot: Implementação Automática
 
 ### Autenticação (Sempre Implementar)
 
-```csharp
-// Exemplo de estrutura esperada
-[Authorize(Policy = "RequireValidJWT")]
-[HttpGet]
-public async Task<IActionResult> GetResource(
-    [FromQuery] GetResourceRequest request)
-{
-    // Validação automática via ModelState
-    if (!ModelState.IsValid)
-        return BadRequest(ModelState);
+```python
+from fastapi import Depends, FastAPI, HTTPException, Security
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from pydantic import BaseModel
 
-    // Verificação de autorização específica
-    var hasPermission = await _authService
-        .HasPermissionAsync(User.Identity.Name, "resource:read");
+# Configuração de autenticação
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-    if (!hasPermission)
-        return Forbid();
-
-    // Implementação segura...
-}
+@router.get("/resource")
+async def get_resource(
+    current_user: User = Depends(get_current_user)
+):
+    """Endpoint protegido com JWT."""
+    return {"data": "protected"}
 ```
 
 ### Validação de Entrada (Padrão Obrigatório)
 
-- **DTOs**: Sempre usar Data Transfer Objects
-- **Annotations**: [Required], [StringLength], [Range] etc.
-- **Custom Validators**: Para regras de negócio específicas
-- **Sanitização**: Remover/escapar caracteres perigosos
+```python
+from pydantic import BaseModel, Field, validator
+from typing import Optional
 
-### Implementação de Rate Limiting
+class UserCreate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    email: str = Field(..., regex=r"^[\w\.-]+@[\w\.-]+\.\w+$")
+    password: str = Field(..., min_length=8)
 
-```csharp
-// Configuração padrão esperada
-services.AddRateLimiter(options =>
-{
-    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
-        httpContext => RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Connection.RemoteIpAddress?.ToString(),
-            factory: partition => new FixedWindowRateLimiterOptions
-            {
-                AutoReplenishment = true,
-                PermitLimit = 100,
-                Window = TimeSpan.FromMinutes(1)
-            }));
-});
+    @validator("username")
+    def validate_username(cls, v):
+        if not v.isalnum():
+            raise ValueError("Username deve conter apenas letras e números")
+        return v
 ```
 
-### Headers de Segurança (Sempre Incluir)
+### Rate Limiting com FastAPI
 
-```csharp
-// Middleware de segurança obrigatório
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-    context.Response.Headers.Add("X-Frame-Options", "DENY");
-    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-    context.Response.Headers.Add("Referrer-Policy", "strict-origin-when-cross-origin");
-    context.Response.Headers.Add("Content-Security-Policy", "default-src 'self'");
-    await next();
-});
+```python
+from fastapi import FastAPI
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
+app = FastAPI()
+app.state.limiter = limiter
+
+@app.get("/api/resource")
+@limiter.limit("5/minute")
+async def read_resource(request: Request):
+    return {"data": "rate-limited-resource"}
 ```
 
-### Logging Seguro (Padrão de Implementação)
+### Logging Seguro (Estruturado)
 
-```csharp
-// Estrutura de log segura
-_logger.LogInformation("User {UserId} accessed resource {ResourceId} at {Timestamp}",
-    user.Id,  // Nunca logar dados sensíveis
-    resource.Id,
-    DateTime.UtcNow);
+```python
+import structlog
 
-// NUNCA fazer:
-// _logger.LogInformation("User login: {Email} {Password}", email, password);
+logger = structlog.get_logger()
+
+# ✅ CORRETO - Logging estruturado seguro
+logger.info(
+    "user_action",
+    user_id=user.id,
+    action="resource_access",
+    resource_id=resource_id
+)
+
+# ❌ NUNCA FAZER - Expor dados sensíveis
+# logger.info(f"User login: {user.email} with password: {password}")
 ```
 
 ## 🔒 Checklist de Segurança por Feature
 
 ### APIs REST
-
-- [ ] Autenticação JWT implementada
-- [ ] Autorização baseada em roles/claims
-- [ ] Validação de entrada rigorosa
-- [ ] Rate limiting configurado
-- [ ] Headers de segurança presentes
-- [ ] HTTPS obrigatório
-- [ ] Logs de auditoria implementados
+- [ ] Autenticação JWT implementada (via FastAPI security)
+- [ ] Autorização baseada em roles/scopes
+- [ ] Validação Pydantic em todas entradas
+- [ ] Rate limiting configurado (slowapi)
+- [ ] Headers de segurança (via middleware)
+- [ ] HTTPS forçado
+- [ ] Logging estruturado (structlog)
 
 ### Acesso a Dados
-
-- [ ] Queries parametrizadas (sem concatenação)
-- [ ] Validação de permissões a nível de linha
-- [ ] Auditoria de operações sensíveis
-- [ ] Conexões seguras com banco
-- [ ] Secrets em Azure Key Vault
+- [ ] SQLAlchemy com parâmetros escapados
+- [ ] Validação de permissões (Row Level Security)
+- [ ] Auditoria via OpenTelemetry
+- [ ] SSL/TLS para conexões
+- [ ] Secrets via env ou vault
 
 ### Tratamento de Erros
+```python
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
 
-- [ ] Não exposição de stack traces
-- [ ] Mensagens genéricas para usuário
-- [ ] Logs detalhados para desenvolvimento
-- [ ] Códigos de erro padronizados
-
-## ⚠️ Vulnerabilidades Comuns a Evitar
-
-### Injection Attacks
-
-```csharp
-// ❌ NUNCA fazer:
-string sql = $"SELECT * FROM Users WHERE Id = {userId}";
-
-// ✅ SEMPRE fazer:
-var user = await context.Users
-    .Where(u => u.Id == userId)
-    .FirstOrDefaultAsync();
+@app.exception_handler(HTTPException)
+async def custom_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": {
+                "code": exc.status_code,
+                "message": "Erro no processamento da requisição"
+            }
+        }
+    )
 ```
-
-### XSS Prevention
-
-```csharp
-// ✅ Encoding automático
-@Html.DisplayFor(model => model.UserInput)
-
-// ✅ Validação de entrada
-[RegularExpression(@"^[a-zA-Z0-9\s]*$", ErrorMessage = "Caracteres especiais não permitidos")]
-public string UserInput { get; set; }
-```
-
-### CSRF Protection
-
-```csharp
-// ✅ Anti-forgery token
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> UpdateProfile(ProfileModel model)
-{
-    // Implementação segura
-}
-```
-
-## 🎯 Instruções Específicas para Copilot
-
-Quando gerar código de API:
-
-1. **SEMPRE** incluir autenticação e autorização
-2. **SEMPRE** validar entrada com DTOs
-3. **SEMPRE** implementar logging estruturado
-4. **SEMPRE** tratar erros adequadamente
-5. **SEMPRE** considerar rate limiting
-6. **NUNCA** incluir secrets hardcoded
-7. **NUNCA** concatenar strings em queries SQL
-8. **NUNCA** expor informações sensíveis em logs ou erros

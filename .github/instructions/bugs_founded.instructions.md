@@ -1,138 +1,83 @@
-# Registro de Bugs Encontrados
-
-Este documento rastreia os bugs identificados no projeto, mesmo que já tenham sido corrigidos.
-
 ---
-
-## Formato de Registro
-
-Para cada bug, utilize o seguinte formato:
-
-```
-### [ID_BUG] - Título Descritivo do Bug
-
-- **Data Identificado**: YYYY-MM-DD
-- **Identificado Por**: @username
-- **Componente(s) Afetado(s)**: (ex: Módulo de Login, API de Produtos, Frontend Carrinho)
-- **Gravidade**: (Crítica, Alta, Média, Baixa)
-- **Prioridade**: (Urgente, Alta, Média, Baixa)
-- **Status**: (Novo, Em Análise, Em Correção, Corrigido, Fechado, Reaberto, Adiado)
-
-**Descrição do Bug**:
-(Detalhe o comportamento inesperado. Seja o mais específico possível.)
-
-**Passos para Reproduzir**:
-1. (Passo 1)
-2. (Passo 2)
-3. (Passo 3)
-... (Comportamento observado vs. Comportamento esperado)
-
-**Ambiente (se aplicável)**:
-- Navegador/Versão:
-- Sistema Operacional:
-- Versão do Software:
-- Dados específicos usados:
-
-**Impacto do Bug**:
-(Qual o impacto no usuário, no sistema ou no negócio?)
-
-**Solução Aplicada (se corrigido)**:
-(Descreva a correção implementada.)
-
-- **Data da Correção**: YYYY-MM-DD
-- **Corrigido Por**: @username
-- **Commit/PR da Correção**: (Link para o commit ou Pull Request)
-
-**Causa Raiz (opcional, se conhecida)**:
-(Uma breve análise da causa raiz do bug.)
-
-**Notas Adicionais**:
-(Qualquer outra informação relevante, screenshots, logs, etc.)
-
+applyTo: "**"
 ---
+# 🐛 Bugs Encontrados - Registro e Rastreamento
+
+## 🎯 Formato de Registro
+
+### Estrutura Obrigatória
+```markdown
+## [ID do Bug] - [Status] - [Data]
+
+### 🔍 Descrição
+[Descrição clara e objetiva do bug]
+
+### 🛠️ Passos para Reproduzir
+1. [Passo 1]
+2. [Passo 2]
+3. [Passo 3]
+
+### 💥 Impacto
+- [Severidade]
+- [Usuários/sistemas afetados]
+- [Dados comprometidos]
+
+### 🩹 Correção
+- **PR**: #[número-do-PR]
+- **Commit**: [hash-do-commit]
+- **Solução**: [descrição breve]
 ```
 
-## Bugs Registrados
+## Exemplos de Bugs Python/FastAPI
 
-### Exemplo: BUG001 - Botão de Login Não Responde em Navegadores Específicos
+### BUG-001 - ABERTO - 2025-06-23
 
-- **Data Identificado**: 2025-05-15
-- **Identificado Por**: @tester_jane
-- **Componente(s) Afetado(s)**: Módulo de Login, Interface do Usuário
-- **Gravidade**: Alta
-- **Prioridade**: Urgente
-- **Status**: Corrigido
+#### 🔍 Descrição
+Race condition na execução de coroutines em operações assíncronas.
 
-**Descrição do Bug**:
-O botão "Entrar" na página de login não dispara nenhuma ação quando clicado nos navegadores Safari (versão X.Y) e Edge (versão A.B). Em outros navegadores como Chrome e Firefox, funciona como esperado.
+#### 🛠️ Passos para Reproduzir
+1. Executar múltiplas requisições assíncronas simultâneas
+2. Verificar logs de execução concorrente
+3. Observar ordem de execução inconsistente
 
-**Passos para Reproduzir**:
+#### 💥 Impacto
+- Severidade: Alta
+- Afeta todas operações assíncronas
+- Possível inconsistência de dados
 
-1. Abrir a página de login (`/login`) no Safari vX.Y ou Edge vA.B.
-2. Preencher o email e senha com credenciais válidas.
-3. Clicar no botão "Entrar".
-4. **Comportamento Observado**: Nada acontece. Nenhuma requisição de rede é disparada, nenhum erro no console.
-5. **Comportamento Esperado**: O usuário deve ser autenticado e redirecionado para o dashboard.
+#### 🩹 Correção
+- **PR**: Pendente
+- **Solução**: Implementar locks assíncronos
 
-**Ambiente (se aplicável)**:
+### BUG-000 - FECHADO - 2025-06-22
 
-- Navegador/Versão: Safari vX.Y, Microsoft Edge vA.B
-- Sistema Operacional: macOS Sonoma (para Safari), Windows 11 (para Edge)
+#### 🔍 Descrição
+Memory leak em upload de arquivos grandes via FastAPI.
 
-**Impacto do Bug**:
-Usuários dos navegadores afetados não conseguem acessar o sistema, bloqueando completamente o uso da plataforma para eles.
+#### 🛠️ Passos para Reproduzir
+```python
+from fastapi import FastAPI, File, UploadFile
 
-**Solução Aplicada (se corrigido)**:
-Foi identificado um problema de compatibilidade com um polyfill de JavaScript que não estava sendo carregado corretamente nesses navegadores. O script de carregamento do polyfill foi ajustado para garantir a execução antes do código de login.
+@app.post("/upload/")
+async def upload_file(file: UploadFile):
+    content = await file.read()  # Bug: Carrega arquivo inteiro na memória
+    return {"filename": file.filename}
+```
 
-- **Data da Correção**: 2025-05-15
-- **Corrigido Por**: @dev_john
-- **Commit/PR da Correção**: [Link para PR #123](https://github.com/SU-AIOFFICE/Demo/pull/123)
+#### 💥 Impacto
+- Severidade: Média
+- Afeta uploads grandes
+- Degradação de performance
 
-**Causa Raiz (opcional, se conhecida)**:
-Carregamento assíncrono de dependências críticas não estava garantindo a ordem de execução correta em todos os navegadores.
-
-**Notas Adicionais**:
-Testes de compatibilidade cross-browser foram reforçados para a funcionalidade de login.
-
----
-
-### BUG002 - Falha de Lint em Bloco de Código Markdown
-
-- **Data Identificado**: 2025-06-23
-- **Identificado Por**: @copilot
-- **Componente(s) Afetado(s)**: Documentação (`docs/onboarding.md`)
-- **Gravidade**: Baixa
-- **Prioridade**: Baixa
-- **Status**: Novo
-
-**Descrição do Bug**:
-Lint MD031 acusa ausência de linha em branco antes/depois de bloco de código powershell em `docs/onboarding.md`.
-
-**Passos para Reproduzir**:
-1. Executar linter markdown no arquivo `docs/onboarding.md`.
-2. Observar warning MD031/blanks-around-fences.
-
-**Ambiente (se aplicável)**:
-- Sistema Operacional: Windows/Linux
-- Ferramenta: Markdown Lint
-
-**Impacto do Bug**:
-Nenhum impacto funcional, apenas warning de formatação.
-
-**Solução Aplicada (se corrigido)**:
-Ajustar espaçamento em torno de blocos de código markdown.
-
-- **Data da Correção**: 
-- **Corrigido Por**: 
-- **Commit/PR da Correção**: 
-
-**Causa Raiz (opcional, se conhecida)**:
-Geração automática do markdown sem linha em branco antes/depois do bloco de código.
-
-**Notas Adicionais**:
-Sem impacto em build ou execução dos scripts.
-
----
-
-_(Adicione novos bugs abaixo desta linha, seguindo o formato)_
+#### 🩹 Correção
+- **PR**: #123
+- **Commit**: abc123def
+- **Solução**: Implementado streaming
+```python
+@app.post("/upload/")
+async def upload_file(file: UploadFile):
+    async with aiofiles.open(dest_path, 'wb') as out_file:
+        while content := await file.read(1024):  # Stream em chunks
+            await out_file.write(content)
+    return {"filename": file.filename}
+```

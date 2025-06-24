@@ -1,3 +1,6 @@
+---
+mode: "agent"
+---
 # Atualização do Memory Bank via MCP
 
 Atualize o Memory Bank do projeto usando ferramentas MCP.

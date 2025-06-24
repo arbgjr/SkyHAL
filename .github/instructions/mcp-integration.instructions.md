@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # Integração com MCP Tools
 
 ## Ferramentas Disponíveis

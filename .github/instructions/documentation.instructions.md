@@ -1,3 +1,6 @@
+---
+applyTo: "**"
+---
 # 📝 Padrões de Documentação - Implementação Prática
 
 ## 🎯 Para GitHub Copilot: Geração Automática
@@ -530,3 +533,104 @@ Ao gerar documentação:
 10. **MANTER** documentação próxima ao código
 11. **ATUALIZAR** documentação durante o desenvolvimento, não depois
 12. **USAR** estrutura consistente e padronizada
+
+# 📚 Documentação - Padrões e Práticas
+
+## 🐍 Docstrings Python
+
+### Classes
+```python
+class UserService:
+    """Serviço para gerenciamento de usuários.
+    
+    Responsável por todas operações relacionadas a usuários,
+    incluindo CRUD, autenticação e validação.
+    
+    Attributes:
+        repo (UserRepository): Repositório de usuários
+        auth_service (AuthService): Serviço de autenticação
+    """
+
+    def create_user(self, data: Dict[str, Any]) -> User:
+        """Cria um novo usuário.
+        
+        Args:
+            data (Dict[str, Any]): Dados do usuário contendo:
+                - username (str): Nome de usuário
+                - email (str): Email
+                - password (str): Senha não-criptografada
+        
+        Returns:
+            User: Usuário criado com ID gerado
+            
+        Raises:
+            ValidationError: Se dados inválidos
+            ConflictError: Se usuário já existe
+        """
+```
+
+## 📑 FastAPI OpenAPI/Swagger
+
+### Endpoints
+```python
+from fastapi import APIRouter, Depends, HTTPException
+from typing import List
+
+router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    responses={404: {"description": "Não encontrado"}}
+)
+
+@router.post("/", response_model=UserResponse)
+async def create_user(
+    user: UserCreate,
+    service: UserService = Depends(get_user_service)
+) -> UserResponse:
+    """Cria um novo usuário.
+    
+    Args:
+        user (UserCreate): Dados do usuário
+        service (UserService): Serviço injetado
+    
+    Returns:
+        UserResponse: Usuário criado
+        
+    Raises:
+        HTTPException: 400 se dados inválidos
+        HTTPException: 409 se usuário existe
+    """
+```
+
+## 📝 README.md
+
+### Estrutura
+```markdown
+# Nome do Projeto
+
+Descrição concisa do propósito.
+
+## 🚀 Início Rápido
+
+### Requisitos
+- Python 3.9+
+- Poetry
+
+### Instalação
+```bash
+poetry install
+```
+
+### Execução
+```bash
+poetry run python -m src.main
+```
+
+## 📊 Diagrama de Arquitetura
+
+```mermaid
+graph TD
+    A[API] --> B[Casos de Uso]
+    B --> C[Domínio]
+    C --> D[Repositórios]
+```

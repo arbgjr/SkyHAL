@@ -211,7 +211,7 @@ Modos de chat internos permitem que você forneça configurações de uso geral 
 - Utilizar arquivos de instruções e ferramentas (```toolsets```) em seu arquivo de modo de chat personalizado.
 
 #### Configuração
-1. Use o comando `Chat: Configure Chat Modes` para criar `.chatprompt.md`.
+1. Use o comando `Chat: Configure Chat Modes` para criar `.chatmode.md`.
 2. Um arquivo de modo de chat é um arquivo Markdown com o sufixo. Tem as duas seções principais a seguir:```.chatmode.md```
     - Cabeçalho de metadados da matéria frontal:
       - ```description```: Uma breve descrição do modo de bate-papo. Essa descrição é exibida quando você passa o mouse sobre o modo de bate-papo na lista suspensa do modo de bate-papo na visualização de bate-papo.

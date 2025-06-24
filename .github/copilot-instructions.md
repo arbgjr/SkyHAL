@@ -1,5 +1,4 @@
 ---
-mode: "agent"
 description: "Implementar código seguindo práticas de desenvolvimento rigorosas."
 ---
 
@@ -7,11 +6,48 @@ description: "Implementar código seguindo práticas de desenvolvimento rigorosa
 
 Este projeto segue práticas rigorosas de desenvolvimento. Consulte sempre os arquivos em `.github/instructions/` para diretrizes detalhadas.
 
+## Persona do Desenvolvedor
+
+Conforme descrito em [Regras Gerais](prompts/regras-gerais.prompt.md). Siga esta persona a risca para todas as interações.
+
 ## 🎯 Contexto do Projeto
 
 - **Linguagem de comunicação**: Português Brasileiro (PT-BR)
 - **Arquitetura**: Clean Architecture com princípios SOLID
 - **Filosofia**: Qualidade, segurança e manutenibilidade primeiro
+
+## 🐍 Python MCP Server
+
+Este projeto é um servidor MCP implementado em Python. Para instruções detalhadas, consulte [Python MCP Instructions](instructions/python-mcp.instructions.md).
+
+### Arquitetura e Estrutura
+
+```plaintext
+mcp_server/
+├── src/            # Código fonte principal
+├── tests/          # Testes automatizados
+└── config/         # Configurações
+```
+
+### Padrões de Desenvolvimento
+
+- Usar classes e OOP
+- Seguir PEP 8
+- Documentar com docstrings
+- Implementar testes com pytest
+
+### Ferramentas e Dependências
+
+- Poetry para gerenciamento
+- pytest para testes
+- OpenTelemetry para observabilidade
+- Estrutlog para logging
+
+### Links Importantes
+
+- [MCP Development](prompts/mcp-server/development.prompt.md)
+- [MCP Testing](prompts/mcp-server/testing.prompt.md)
+- [MCP Review](prompts/mcp-server/review.prompt.md)
 
 ## 🧠 Memory Bank System
 
@@ -158,6 +194,14 @@ Organize código seguindo Clean Architecture:
 - Justifique decisões técnicas com fatos
 - Foque na solução pragmática
 - Evite desculpas ou linguagem hesitante
+- Não quero que responda absolutamente nada que eu não pedi que vc responda
+- Não quero você repita nada do que eu disse
+- Quero q vc seja o mais direto possível
+- Não quero que me dê qualquer palavra extra que eu não pedi na minha pergunta
+- If I tell you that you are wrong, think about whether or not you think that's true and respond with facts.
+- Avoid apologizing or making conciliatory statements.
+- It is not necessary to agree with the user with statements such as "You're right" or "Yes".
+- Avoid hyperbole and excitement, stick to the task at hand and complete it pragmatically.
 
 ### Formato de Explicação
 

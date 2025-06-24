@@ -1,47 +1,85 @@
-# ✅ Checklist: Ready & Done
+---
+applyTo: "**"
+---
+# ✅ Definições de Ready/Done
 
-## 🚦 Ready (Pronto para Iniciar)
+## 🎯 Ready (Pronto para Iniciar)
 
-### Definição
-Uma tarefa está "Ready" quando contém informações suficientes para que o desenvolvedor possa iniciar o trabalho sem bloqueios significativos.
+### Requisitos Técnicos
+- [ ] Escopo técnico definido
+- [ ] Dependências identificadas
+- [ ] Interfaces Python necessárias documentadas
+- [ ] Decisões de arquitetura documentadas
+- [ ] Padrões FastAPI a seguir definidos
 
-### Checklist
-- [ ] **Objetivo Claro**: Propósito e resultado esperado estão definidos
-- [ ] **Critérios de Aceitação**: Condições específicas para a tarefa ser considerada completa
-- [ ] **Escopo Delimitado**: Limites claramente definidos do que está e não está incluído
-- [ ] **Dependências Resolvidas**: Nenhuma dependência externa bloqueando o início
-- [ ] **Estimativa**: Esforço necessário avaliado pela equipe
-- [ ] **Prioridade**: Importância relativa estabelecida
-- [ ] **Recursos Disponíveis**: Documentação, APIs, credenciais ou outros recursos necessários
-- [ ] **Entendimento Comum**: Todos os envolvidos têm a mesma compreensão da tarefa
+### Infraestrutura
+- [ ] Ambiente Python configurado
+- [ ] Poetry atualizado
+- [ ] Dependências resolvidas
+- [ ] Variáveis de ambiente definidas
+- [ ] OpenTelemetry configurado
 
-## ✓ Done (Pronto/Concluído)
+### Testes
+- [ ] Cenários de teste identificados
+- [ ] Mocks necessários planejados
+- [ ] Fixtures pytest definidas
+- [ ] Cobertura mínima definida
 
-### Definição
-Uma tarefa está "Done" quando atende a todos os critérios de aceitação, foi revisada e está pronta para ser entregue.
+## ✅ Done (Pronto para Merge)
 
-### Checklist
-- [ ] **Critérios de Aceitação**: Todos os critérios foram atendidos
-- [ ] **Código Completo**: Implementação finalizada em ambiente de desenvolvimento
-- [ ] **Testes Automatizados**: Unitários, integração e outros testes relevantes escritos e passando
-- [ ] **Documentação**: Atualizada, incluindo comentários no código onde necessário
-- [ ] **Code Review**: Revisado por pares e aprovado
-- [ ] **Merge**: Código integrado à branch principal ou de desenvolvimento
-- [ ] **Build/CI**: Passa em todos os pipelines de CI
-- [ ] **Testes de QA**: Verificado por QA ou testador (se aplicável)
-- [ ] **Segurança**: Verificações de segurança concluídas
-- [ ] **Performance**: Atende aos requisitos de desempenho
-- [ ] **Implantação**: Implementado em ambiente de teste/homologação
-- [ ] **Sem Bugs Conhecidos**: Problemas identificados foram resolvidos ou documentados
-- [ ] **Aceito pelo PO**: Product Owner verificou e aprovou (se aplicável)
+### Código
+- [ ] Segue PEP 8
+- [ ] Docstrings completas
+- [ ] Type hints aplicados
+- [ ] Clean Architecture respeitada
+- [ ] SOLID aplicado
+- [ ] Logging estruturado implementado
 
-## 🔄 Fluxo de Trabalho
+### Testes
+- [ ] Testes unitários escritos
+- [ ] Testes de integração incluídos
+- [ ] Cobertura mínima atingida (80%)
+- [ ] Testes async implementados
+- [ ] Mocks apropriados usados
 
-```
-Backlog → Ready → Em Desenvolvimento → Review → Testes → Done
-```
+### Segurança
+- [ ] Validação de entrada implementada
+- [ ] Autenticação/Autorização testada
+- [ ] Dados sensíveis protegidos
+- [ ] Rate limiting configurado
+- [ ] Headers de segurança definidos
 
-## 📋 Notas
-- As definições de Ready e Done podem ser ajustadas conforme o projeto
-- Equipes ágeis devem revisar e refinar estas definições regularmente
-- Todos os membros da equipe devem conhecer e aplicar estes critérios
+### Observabilidade
+- [ ] Métricas OpenTelemetry
+- [ ] Traces implementados
+- [ ] Logs estruturados
+- [ ] Alertas configurados
+
+### Documentação
+- [ ] README.md atualizado
+- [ ] API documentada (OpenAPI)
+- [ ] Mudanças em BD documentadas
+- [ ] Arquitetura atualizada
+- [ ] Exemplos de uso incluídos
+
+### DevOps
+- [ ] CI/CD testado
+- [ ] Docker build passa
+- [ ] Dependências atualizadas
+- [ ] Secrets gerenciados
+- [ ] Ambiente replicável
+
+## 🔄 Critérios de Transição
+
+### Para Ready
+1. Todos itens Ready checados
+2. Time concorda com requisitos
+3. Recursos disponíveis
+4. Não há bloqueadores
+
+### Para Done
+1. Todos itens Done checados
+2. Code review aprovado
+3. Testes passando
+4. Qualidade verificada
+5. Documentação atualizada

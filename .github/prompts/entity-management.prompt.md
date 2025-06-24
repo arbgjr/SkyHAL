@@ -1,3 +1,6 @@
+---
+mode: "agent"
+---
 # Gerenciamento de Entidades do Knowledge Graph
 
 Crie, atualize e delete entidades no knowledge graph do projeto.

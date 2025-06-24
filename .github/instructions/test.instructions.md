@@ -8,226 +8,125 @@ applyTo: "**"
 
 ### Padrão AAA Obrigatório
 
-```csharp
-[Test]
-public async Task UserService_CreateUser_DeveRetornarUsuarioCriado()
-{
-    // Arrange
-    var userRequest = new CreateUserRequest
-    {
-        Email = "test@example.com",
-        Name = "Test User"
-    };
-    var mockRepository = new Mock<IUserRepository>();
-    var userService = new UserService(mockRepository.Object);
-
-    // Act
-    var result = await userService.CreateUserAsync(userRequest);
-
-    // Assert
-    Assert.That(result, Is.Not.Null);
-    Assert.That(result.Email, Is.EqualTo(userRequest.Email));
-    mockRepository.Verify(r => r.CreateAsync(It.IsAny<User>()), Times.Once);
-}
+```python
+def test_user_service_create_user_returns_created_user():
+    # Arrange
+    user_data = {"name": "Test User", "email": "test@example.com"}
+    user_service = UserService()
+    
+    # Act
+    result = user_service.create_user(user_data)
+    
+    # Assert
+    assert result.name == user_data["name"]
+    assert result.email == user_data["email"]
 ```
 
 ### Nomenclatura Padrão
 
-**Formato**: `<ClasseTeste>_<Método>_<Cenário>_<ResultadoEsperado>`
+**Formato**: `test_<classe>_<método>_<cenário>_<resultado_esperado>`
 
 **Exemplos**:
 
-```csharp
-UserService_CreateUser_ComEmailValido_DeveRetornarUsuario()
-UserService_CreateUser_ComEmailInvalido_DeveLancarValidationException()
-UserService_CreateUser_QuandoEmailJaExiste_DeveLancarConflictException()
-UserController_GetUser_ComIdValido_DeveRetornarOkResult()
-UserController_GetUser_ComIdInexistente_DeveRetornar404()
+```python
+def test_user_service_create_user_with_valid_email_returns_user():
+    """Testa criação de usuário com email válido."""
+
+def test_user_service_create_user_with_invalid_email_raises_validation_error():
+    """Testa que email inválido lança erro."""
+
+def test_user_service_create_user_when_email_exists_raises_conflict():
+    """Testa que email duplicado lança erro."""
 ```
 
-### Testes por Camada
+### Fixtures e Mocks
 
-#### Controllers (Testes de Integração)
+```python
+import pytest
+from unittest.mock import Mock, patch
 
-```csharp
-[TestFixture]
-public class UserControllerTests : IntegrationTestBase
-{
-    [Test]
-    public async Task Post_User_ComDadosValidos_DeveRetornar201()
-    {
-        // Arrange
-        var request = new CreateUserRequest { /* dados válidos */ };
+@pytest.fixture
+def mock_user_repo():
+    return Mock()
 
-        // Act
-        var response = await Client.PostAsJsonAsync("/api/users", request);
+@pytest.fixture
+def user_service(mock_user_repo):
+    return UserService(repo=mock_user_repo)
 
-        // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        var user = await response.Content.ReadFromJsonAsync<UserResponse>();
-        Assert.That(user.Email, Is.EqualTo(request.Email));
-    }
-}
+def test_get_user_when_exists_returns_user(user_service, mock_user_repo):
+    # Arrange
+    expected_user = User(id=1, name="Test")
+    mock_user_repo.get_by_id.return_value = expected_user
+    
+    # Act
+    result = user_service.get_user(1)
+    
+    # Assert
+    assert result == expected_user
+    mock_user_repo.get_by_id.assert_called_once_with(1)
 ```
 
-#### Services (Testes Unitários)
+### Testes de API (FastAPI)
 
-```csharp
-[TestFixture]
-public class UserServiceTests
-{
-    private Mock<IUserRepository> _mockRepository;
-    private Mock<ILogger<UserService>> _mockLogger;
-    private UserService _userService;
+```python
+from fastapi.testclient import TestClient
 
-    [SetUp]
-    public void Setup()
-    {
-        _mockRepository = new Mock<IUserRepository>();
-        _mockLogger = new Mock<ILogger<UserService>>();
-        _userService = new UserService(_mockRepository.Object, _mockLogger.Object);
-    }
+@pytest.fixture
+def client():
+    return TestClient(app)
 
-    [Test]
-    public async Task CreateUserAsync_ComEmailUnico_DeveRetornarUsuario()
-    {
-        // Implementação do teste...
-    }
-}
+def test_get_user_returns_200(client):
+    # Arrange
+    user_id = 1
+    
+    # Act
+    response = client.get(f"/users/{user_id}")
+    
+    # Assert
+    assert response.status_code == 200
+    assert response.json()["id"] == user_id
 ```
 
-### Testes de API (Casos Obrigatórios)
+### Testes Parametrizados
 
-#### Casos de Sucesso
-
-- [ ] GET com dados válidos retorna 200
-- [ ] POST com dados válidos retorna 201
-- [ ] PUT com dados válidos retorna 200/204
-- [ ] DELETE com ID válido retorna 204
-
-#### Casos de Erro
-
-- [ ] GET com ID inexistente retorna 404
-- [ ] POST com dados inválidos retorna 400
-- [ ] Operações sem autenticação retornam 401
-- [ ] Operações sem autorização retornam 403
-
-#### Validação de Entrada
-
-```csharp
-[Test]
-[TestCase("", "Nome é obrigatório")]
-[TestCase("a", "Nome deve ter pelo menos 2 caracteres")]
-[TestCase(null, "Nome é obrigatório")]
-public async Task CreateUser_ComNomeInvalido_DeveRetornarBadRequest(
-    string nome, string mensagemEsperada)
-{
-    // Arrange
-    var request = new CreateUserRequest { Name = nome };
-
-    // Act
-    var response = await Client.PostAsJsonAsync("/api/users", request);
-
-    // Assert
-    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-    var errors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
-    Assert.That(errors.Errors.Any(e => e.Message.Contains(mensagemEsperada)), Is.True);
-}
+```python
+@pytest.mark.parametrize("name,expected_error", [
+    ("", "Nome é obrigatório"),
+    ("a", "Nome deve ter pelo menos 2 caracteres"),
+    (None, "Nome é obrigatório")
+])
+def test_create_user_with_invalid_name_raises_error(
+    name, expected_error, user_service
+):
+    with pytest.raises(ValidationError) as exc:
+        user_service.create_user({"name": name})
+    assert str(exc.value) == expected_error
 ```
 
-### Mocking Guidelines
+### Testes Assíncronos
 
-#### Dependências Externas
-
-```csharp
-// ✅ Mock de serviços externos
-var mockEmailService = new Mock<IEmailService>();
-mockEmailService
-    .Setup(s => s.SendAsync(It.IsAny<EmailMessage>()))
-    .ReturnsAsync(true)
-    .Verifiable();
-
-// ✅ Verificação de chamadas
-mockEmailService.Verify(
-    s => s.SendAsync(It.Is<EmailMessage>(m => m.To == "test@example.com")),
-    Times.Once);
+```python
+@pytest.mark.asyncio
+async def test_async_operation():
+    # Arrange
+    service = AsyncService()
+    
+    # Act
+    result = await service.process()
+    
+    # Assert
+    assert result is not None
 ```
 
-#### Base de Dados
+## ✅ Diretrizes de Cobertura
 
-```csharp
-// ✅ Usar banco em memória para testes de integração
-services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()));
+- Mínimo 80% de cobertura total
+- 100% em domínio e casos de uso
+- Usar `pytest-cov` para relatórios
+- Configurar no CI/CD
 
-// ✅ Mock repository para testes unitários
-var mockRepository = new Mock<IUserRepository>();
-mockRepository
-    .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
-    .ReturnsAsync((User)null);
-```
+## 📊 Relatórios
 
-### Performance Tests
-
-```csharp
-[Test]
-public async Task GetUsers_ComMuitosRegistros_DeveRetornarEmMenosDe500ms()
-{
-    // Arrange
-    var stopwatch = Stopwatch.StartNew();
-
-    // Act
-    var response = await Client.GetAsync("/api/users?pageSize=1000");
-    stopwatch.Stop();
-
-    // Assert
-    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-    Assert.That(stopwatch.ElapsedMilliseconds, Is.LessThan(500));
-}
-```
-
-### Dados de Teste (Builder Pattern)
-
-```csharp
-public class UserTestBuilder
-{
-    private User _user = new User();
-
-    public UserTestBuilder WithEmail(string email)
-    {
-        _user.Email = email;
-        return this;
-    }
-
-    public UserTestBuilder WithName(string name)
-    {
-        _user.Name = name;
-        return this;
-    }
-
-    public User Build() => _user;
-}
-
-// Uso:
-var user = new UserTestBuilder()
-    .WithEmail("test@example.com")
-    .WithName("Test User")
-    .Build();
-```
-
-## 🎯 Instruções para Copilot
-
-Ao gerar testes:
-
-1. **SEMPRE** usar padrão AAA
-2. **SEMPRE** seguir nomenclatura especificada
-3. **SEMPRE** incluir casos de erro
-4. **SEMPRE** mockar dependências externas
-5. **SEMPRE** verificar assertions adequadas
-6. **SEMPRE** incluir testes de validação
-7. **CONSIDERAR** performance em testes de integração
-8. **DOCUMENTAR** cenários complexos com comentários
-
-```
-
+```bash
+pytest --cov=src --cov-report=html tests/
 ```
