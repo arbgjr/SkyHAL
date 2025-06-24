@@ -1,12 +1,58 @@
 ---
-applyTo: "**"
+applyTo: "**/tests/**/*.py"
+description: "Instruções padronizadas para testes automatizados em Python"
 ---
 
-# 🧪 Estratégia de Testes - Implementação Prática
+# 🧪 Instruções para Testes Automatizados em Projetos Python
 
-## 🎯 Para GitHub Copilot: Geração Automática de Testes
+## 🎯 Filosofia
 
-### Padrão AAA Obrigatório
+- Qualidade vem com prevenção, não detecção tardia
+- Testes são documentação executável
+- Feedback rápido e confiável é mais valioso que cobertura absoluta
+- Testes bem escritos facilitam refatorações seguras
+
+---
+
+## 📂 Organização e Estrutura
+
+### Padrão de Diretórios
+
+```
+project/
+├── src/
+│   └── ...            # Código fonte
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── e2e/
+│   ├── conftest.py
+│   └── **init**.py
+```
+
+### Nome dos Arquivos
+
+- `test_<modulo>_<classe>_<cenario>_<resultado>.py`
+
+---
+
+## ✅ Estratégia de Testes
+
+### Tipos de Teste
+
+| Tipo         | Objetivo                                 | Exemplo de ferramenta         |
+|--------------|-------------------------------------------|-------------------------------|
+| Unitário     | Lógica isolada                           | `pytest`, `unittest.mock`     |
+| Integração   | API + DB, Serviços externos              | `pytest + httpx` ou `TestClient` |
+| E2E          | Fluxo completo da aplicação              | `Playwright`, `Selenium`      |
+| Assíncrono   | Operações `async/await`                  | `pytest-asyncio`              |
+| Parametrizado| Testar múltiplas entradas de forma concisa| `pytest.mark.parametrize`     |
+
+---
+
+## 🧱 Padrão AAA
+
+Sempre use o padrão **Arrange → Act → Assert**:
 
 ```python
 def test_user_service_create_user_returns_created_user():
@@ -22,28 +68,15 @@ def test_user_service_create_user_returns_created_user():
     assert result.email == user_data["email"]
 ```
 
-### Nomenclatura Padrão
+---
 
-**Formato**: `test_<classe>_<método>_<cenário>_<resultado_esperado>`
-
-**Exemplos**:
-
-```python
-def test_user_service_create_user_with_valid_email_returns_user():
-    """Testa criação de usuário com email válido."""
-
-def test_user_service_create_user_with_invalid_email_raises_validation_error():
-    """Testa que email inválido lança erro."""
-
-def test_user_service_create_user_when_email_exists_raises_conflict():
-    """Testa que email duplicado lança erro."""
-```
+## 🧪 Testes com pytest
 
 ### Fixtures e Mocks
 
 ```python
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 @pytest.fixture
 def mock_user_repo():
@@ -54,79 +87,104 @@ def user_service(mock_user_repo):
     return UserService(repo=mock_user_repo)
 
 def test_get_user_when_exists_returns_user(user_service, mock_user_repo):
-    # Arrange
     expected_user = User(id=1, name="Test")
     mock_user_repo.get_by_id.return_value = expected_user
-    
-    # Act
+
     result = user_service.get_user(1)
-    
-    # Assert
+
     assert result == expected_user
     mock_user_repo.get_by_id.assert_called_once_with(1)
 ```
 
-### Testes de API (FastAPI)
+### Teste com FastAPI
 
 ```python
 from fastapi.testclient import TestClient
+from app import app
 
 @pytest.fixture
 def client():
     return TestClient(app)
 
 def test_get_user_returns_200(client):
-    # Arrange
-    user_id = 1
-    
-    # Act
-    response = client.get(f"/users/{user_id}")
-    
-    # Assert
+    response = client.get("/users/1")
     assert response.status_code == 200
-    assert response.json()["id"] == user_id
+    assert "id" in response.json()
 ```
 
-### Testes Parametrizados
+### Teste Assíncrono
 
 ```python
-@pytest.mark.parametrize("name,expected_error", [
-    ("", "Nome é obrigatório"),
-    ("a", "Nome deve ter pelo menos 2 caracteres"),
-    (None, "Nome é obrigatório")
-])
-def test_create_user_with_invalid_name_raises_error(
-    name, expected_error, user_service
-):
-    with pytest.raises(ValidationError) as exc:
-        user_service.create_user({"name": name})
-    assert str(exc.value) == expected_error
-```
+import pytest
 
-### Testes Assíncronos
-
-```python
 @pytest.mark.asyncio
-async def test_async_operation():
-    # Arrange
+async def test_async_op():
     service = AsyncService()
-    
-    # Act
-    result = await service.process()
-    
-    # Assert
+    result = await service.run()
     assert result is not None
 ```
 
-## ✅ Diretrizes de Cobertura
+### Parametrização
 
-- Mínimo 80% de cobertura total
-- 100% em domínio e casos de uso
-- Usar `pytest-cov` para relatórios
-- Configurar no CI/CD
+```python
+@pytest.mark.parametrize("name,error", [
+    ("", "Nome é obrigatório"),
+    (None, "Nome é obrigatório"),
+    ("a", "Nome deve ter pelo menos 2 caracteres")
+])
+def test_create_user_invalid_name_raises_error(name, error, user_service):
+    with pytest.raises(ValidationError) as exc:
+        user_service.create_user({"name": name})
+    assert str(exc.value) == error
+```
 
-## 📊 Relatórios
+---
+
+## 🧼 Boas Práticas
+
+* Teste comportamento, não implementação interna
+* Evite mocks excessivos em testes de integração
+* Testes devem rodar rapidamente e de forma confiável
+* Utilize `conftest.py` para fixtures compartilhadas
+* Sempre limpe recursos após execução (ex: `tmp_path`, banco, conexões)
+
+---
+
+## 🧮 Cobertura e Métricas
+
+* Cobertura mínima: **80%**
+* Use `pytest-cov`:
 
 ```bash
-pytest --cov=src --cov-report=html tests/
+pytest --cov=src --cov-report=term-missing --cov-report=html tests/
 ```
+
+* Priorize 100% de cobertura em regras de negócio
+* Configure verificação de cobertura no CI/CD
+
+---
+
+## 📊 Métricas de Qualidade
+
+* Tempo médio de execução por suite
+* Número de testes flaky
+* Tempo médio até detecção de falha (MTTD)
+* Cobertura por tipo (unit/integration)
+
+---
+
+## 🔧 Ferramentas Recomendadas
+
+| Categoria   | Ferramenta                     |
+| ----------- | ------------------------------ |
+| Test runner | `pytest`, `pytest-asyncio`     |
+| Mock/Stub   | `unittest.mock`, `pytest-mock` |
+| Cobertura   | `pytest-cov`                   |
+| Validação   | `pydantic`, `voluptuous`       |
+| Segurança   | `bandit`, `safety`             |
+| Linter      | `ruff`, `flake8`               |
+| Formatador  | `black`                        |
+| Tipagem     | `mypy`                         |
+| Relatório   | `coverage html`                |
+
+---

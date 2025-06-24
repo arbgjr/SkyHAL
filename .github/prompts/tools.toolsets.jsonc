@@ -1,0 +1,80 @@
+// Place your tool sets here...
+// Example:
+// {
+// 	"toolSetName": {
+// 		"tools": [
+// 			"someTool",
+// 			"anotherTool"
+// 		],
+// 		"description": "description",
+// 		"icon": "tools"
+// 	}
+// }
+{
+  "development": {
+    "tools": [
+      "codebase",
+      "fetch",
+      "findTestFiles",
+      "githubRepo",
+      "problems",
+      "search",
+      "usages",
+      "changes"
+    ],
+    "description": "Ferramentas para desenvolvimento geral e análise de código",
+    "icon": "code"
+  },
+  "architecture": {
+    "tools": [
+      "codebase",
+      "search",
+      "usages",
+      "githubRepo",
+      "findTestFiles"
+    ],
+    "description": "Ferramentas para design de arquitetura e análise de sistemas",
+    "icon": "blueprint"
+  },
+  "security": {
+    "tools": [
+      "codebase",
+      "problems",
+      "search",
+      "usages"
+    ],
+    "description": "Ferramentas para análise de segurança e vulnerabilidades",
+    "icon": "shield"
+  },
+  "testing": {
+    "tools": [
+      "findTestFiles",
+      "codebase",
+      "problems",
+      "usages"
+    ],
+    "description": "Ferramentas para criação e análise de testes",
+    "icon": "beaker"
+  },
+  "debugging": {
+    "tools": [
+      "problems",
+      "codebase",
+      "search",
+      "changes",
+      "usages"
+    ],
+    "description": "Ferramentas para debugging e análise de problemas",
+    "icon": "bug"
+  },
+  "performance": {
+    "tools": [
+      "codebase",
+      "search",
+      "usages",
+      "problems"
+    ],
+    "description": "Ferramentas para análise e otimização de performance",
+    "icon": "pulse"
+  }
+}

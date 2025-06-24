@@ -121,7 +121,8 @@
 	"github.copilot.chat.ignoreFiles": [
 		"**/.env*",
 		"**/secrets.*",
-		"**/credentials.*"
+		"**/credentials.*",
+    	"**/.git/**"
 	],
 	"github.copilot.chat.edits.temporalContext.enabled": true,
 	"github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": true,
@@ -192,5 +193,11 @@
 	"github.copilot.suggestSettings": true,
 	"github.copilot.chat.runCommand.enabled": true,
 	"workbench.startupEditor": "none",
-	"task.runOnFolderOpen": "Iniciar Servidores MCP"
+	"task.runOnFolderOpen": "Iniciar Servidores MCP",
+
+	"chat.modeFilesLocations": {
+		".github/chatmodes": true
+	},
+	
+	"github.copilot.chat.welcomeMessage": "Olá! Bora programar?"
 }
