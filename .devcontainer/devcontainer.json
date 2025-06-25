@@ -12,7 +12,13 @@
       "installTools": true
     }
   },
-  "postCreateCommand": "dotnet --version && node --version && docker --version && python --version && pip install poetry && poetry install",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
+  },
+  "initializeCommand": "echo 'Inicializando DevContainer para SkyHAL'",
+  "postCreateCommand": "dotnet --version && node --version && docker --version && python --version && pip install poetry && poetry install || echo 'Instalação do Poetry finalizada com avisos'",
   "customizations": {
     "vscode": {
       "settings": {
@@ -68,6 +74,16 @@
     }
   },
   "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
-  ]
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
+  ],
+  "remoteUser": "vscode",
+  "runArgs": [
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
+  ],
+  "overrideCommand": false,
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  }
 }

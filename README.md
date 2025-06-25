@@ -255,16 +255,33 @@ Este projeto oferece um DevContainer Linux pronto para uso, com as principais de
 - Node.js 20
 - Docker (DinD)
 - PowerShell
+- Python 3.11 com Poetry
 - Utilitários CLI essenciais
+
+### ⚠️ Requisitos Importantes
+
+- **Windows**: Requer WSL2 + Docker Desktop configurado para WSL2
+- **Linux**: Docker instalado nativamente
+
+> **NOTA**: No Windows, o DevContainer **só funcionará através do WSL2**, não diretamente no Windows nativo.
 
 ### Como usar
 
 1. Instale o [Visual Studio Code](https://code.visualstudio.com/) e a extensão [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-2. Abra o repositório no VS Code.
-3. Quando solicitado, clique em "Reabrir no Container" ou use o comando `Dev Containers: Reopen in Container`.
-4. Aguarde a instalação das dependências.
+2. Configure o Docker conforme seu sistema operacional (veja documentação detalhada).
+3. Abra o repositório no VS Code através do WSL (Windows) ou nativamente (Linux).
+4. Quando solicitado, clique em "Reabrir no Container" ou use o comando `Dev Containers: Reopen in Container`.
+5. Aguarde a instalação das dependências.
 
 > O DevContainer monta automaticamente sua chave SSH local para facilitar o acesso a repositórios privados.
 
+#### Documentação Detalhada
+
+Para instruções detalhadas, consulte [docs/devcontainer-setup.md](docs/devcontainer-setup.md), que inclui:
+
+- Passo a passo de configuração para Windows/WSL e Linux
+- Solução para problemas comuns
+- Otimizações e melhores práticas
+
 #### Dúvidas ou problemas?
-Consulte o arquivo `.devcontainer/devcontainer.json` para detalhes de configuração ou abra uma issue.
+Consulte nossa documentação detalhada ou abra uma issue descrevendo o problema encontrado.

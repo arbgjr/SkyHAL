@@ -4,11 +4,14 @@
         {
             "label": "Sincronizar Git Local-Remoto",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-File",
-                "${workspaceFolder}/.scripts/git-sync.ps1"
-            ],
+            "windows": {
+                "command": "pwsh",
+                "args": ["-File", "${workspaceFolder}/.scripts/git-sync.ps1"]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": ["${workspaceFolder}/.scripts/git-sync.sh"]
+            },
             "presentation": {
                 "panel": "shared"
             },
@@ -68,11 +71,20 @@
        {
             "label": "Validar Integrações de Arquivos",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "Get-ChildItem -Path '.github/instructions/*.md' | ForEach-Object { Write-Host \"Verificando $($_.Name)...\"; Select-String -Path $_.FullName -Pattern '\\.md' | Measure-Object | Select-Object -ExpandProperty Count }"
-            ],
+            "windows": {
+                "command": "pwsh",
+                "args": [
+                    "-Command",
+                    "Get-ChildItem -Path '.github/instructions/*.md' | ForEach-Object { Write-Host \"Verificando $($_.Name)...\"; Select-String -Path $_.FullName -Pattern '\\.md' | Measure-Object | Select-Object -ExpandProperty Count }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-c",
+                    "for file in .github/instructions/*.md; do echo \"Verificando $(basename $file)...\"; grep -o '\\.md' \"$file\" | wc -l; done"
+                ]
+            },
             "group": "test",
             "presentation": {
                 "echo": true,
@@ -85,11 +97,20 @@
         {
             "label": "Verificar Links entre Arquivos",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "$files = @('done-ready.instructions.md', 'documentation.instructions.md', 'copilot-specific.instructions.md'); foreach($file in $files) { Write-Host \"Verificando referências para $file...\"; Get-ChildItem -Path '.github' -Recurse -Include '*.md', '*.json' | Select-String -Pattern $file | Select-Object Filename, LineNumber, Line }"
-            ],
+            "windows": {
+                "command": "pwsh",
+                "args": [
+                    "-Command",
+                    "$files = @('done-ready.instructions.md', 'documentation.instructions.md', 'copilot-specific.instructions.md'); foreach($file in $files) { Write-Host \"Verificando referências para $file...\"; Get-ChildItem -Path '.github' -Recurse -Include '*.md', '*.json' | Select-String -Pattern $file | Select-Object Filename, LineNumber, Line }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-c",
+                    "FILES=('done-ready.instructions.md' 'documentation.instructions.md' 'copilot-specific.instructions.md'); for file in \"${FILES[@]}\"; do echo \"Verificando referências para $file...\"; grep -r --include=\"*.md\" --include=\"*.json\" \"$file\" .github/; done"
+                ]
+            },
             "group": "test",
             "presentation": {
                 "echo": true,
@@ -122,11 +143,20 @@
         {
             "label": "Verificar Integração Memory Bank",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "Write-Host 'Verificando referências ao Memory Bank...'; $files = @('.github/instructions/*.md', '.github/prompts/*.md', 'copilot-instructions.md', '.vscode/settings.json'); foreach($pattern in $files) { Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | ForEach-Object { $content = Get-Content $_.FullName -Raw; if($content -match 'memory.?bank') { Write-Host \"✅ $($_.Name) referencia Memory Bank\" -ForegroundColor Green } else { Write-Host \"❌ $($_.Name) não referencia Memory Bank\" -ForegroundColor Red } } }"
-            ],
+            "windows": {
+                "command": "pwsh",
+                "args": [
+                    "-Command",
+                    "Write-Host 'Verificando referências ao Memory Bank...'; $files = @('.github/instructions/*.md', '.github/prompts/*.md', 'copilot-instructions.md', '.vscode/settings.json'); foreach($pattern in $files) { Get-ChildItem -Path $pattern -ErrorAction SilentlyContinue | ForEach-Object { $content = Get-Content $_.FullName -Raw; if($content -match 'memory.?bank') { Write-Host \"✅ $($_.Name) referencia Memory Bank\" -ForegroundColor Green } else { Write-Host \"❌ $($_.Name) não referencia Memory Bank\" -ForegroundColor Red } } }"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-c",
+                    "echo 'Verificando referências ao Memory Bank...'; for pattern in '.github/instructions/*.md' '.github/prompts/*.md' 'copilot-instructions.md' '.vscode/settings.json'; do for file in $pattern; do [ -f \"$file\" ] && { if grep -q 'memory.\\?bank' \"$file\"; then echo -e \"\\033[32m✅ $(basename \"$file\") referencia Memory Bank\\033[0m\"; else echo -e \"\\033[31m❌ $(basename \"$file\") não referencia Memory Bank\\033[0m\"; fi; }; done; done"
+                ]
+            },
             "group": "test",
             "presentation": {
                 "echo": true,
@@ -138,10 +168,18 @@
         {
             "label": "Update Memory Bank",
             "type": "shell",
-            "command": "echo",
-            "args": [
-                "Para atualizar o Memory Bank, use o comando 'update memory bank' no GitHub Copilot Chat"
-            ],
+            "windows": {
+                "command": "echo",
+                "args": [
+                    "Para atualizar o Memory Bank, use o comando 'update memory bank' no GitHub Copilot Chat"
+                ]
+            },
+            "linux": {
+                "command": "echo",
+                "args": [
+                    "Para atualizar o Memory Bank, use o comando 'update memory bank' no GitHub Copilot Chat"
+                ]
+            },
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -153,10 +191,18 @@
         {
             "label": "MCP: Analisar Contexto",
             "type": "shell",
-            "command": "echo",
-            "args": [
-                "Use o prompt: @workspace #file:.github/prompts/memory-analysis.prompt.md"
-            ],
+            "windows": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/memory-analysis.prompt.md"
+                ]
+            },
+            "linux": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/memory-analysis.prompt.md"
+                ]
+            },
             "group": "build",
             "presentation": {
                 "reveal": "always",
@@ -166,29 +212,54 @@
         {
             "label": "MCP: Atualizar Memory",
             "type": "shell",
-            "command": "echo",
-            "args": [
-                "Use o prompt: @workspace #file:.github/prompts/memory-update.prompt.md"
-            ],
+            "windows": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/memory-update.prompt.md"
+                ]
+            },
+            "linux": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/memory-update.prompt.md"
+                ]
+            },
             "group": "build"
         },
         {
             "label": "MCP: Planejar Feature",
             "type": "shell",
-            "command": "echo",
-            "args": [
-                "Use o prompt: @workspace #file:.github/prompts/sequential-planning.prompt.md"
-            ],
+            "windows": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/sequential-planning.prompt.md"
+                ]
+            },
+            "linux": {
+                "command": "echo",
+                "args": [
+                    "Use o prompt: @workspace #file:.github/prompts/sequential-planning.prompt.md"
+                ]
+            },
             "group": "build"
         },
         {
             "label": "Atualizar Variáveis de Ambiente",
             "type": "shell",
-            "command": "powershell",
-            "args": [
-                "-Command",
-                "function Update-Environment { foreach($level in 'Machine', 'User') { [System.Environment]::GetEnvironmentVariables($level).GetEnumerator() | % { Set-Item -Path env:$($_.Name) -Value $_.Value } } }; Update-Environment; Write-Host 'Variáveis de ambiente atualizadas!' -ForegroundColor Green"
-            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-Command",
+                    "function Update-Environment { foreach($level in 'Machine', 'User') { [System.Environment]::GetEnvironmentVariables($level).GetEnumerator() | % { Set-Item -Path env:$($_.Name) -Value $_.Value } } }; Update-Environment; Write-Host 'Variáveis de ambiente atualizadas!' -ForegroundColor Green"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-c",
+                    "echo 'Recarregando variáveis de ambiente...'; source /etc/environment; source ~/.bashrc; echo -e '\\033[32mVariáveis de ambiente atualizadas!\\033[0m'"
+                ]
+            },
             "group": "build",
             "presentation": {
                 "reveal": "always",

@@ -4,7 +4,7 @@
 root = true
 
 [*]
-end_of_line = lf
+end_of_line = crlf
 insert_final_newline = true
 charset = utf-8
 trim_trailing_whitespace = true
@@ -23,7 +23,7 @@ indent_size = 2
 # Markdown files
 [*.md]
 trim_trailing_whitespace = false
-max_line_length = 80
+max_line_length = 128
 
 # JSON files
 [*.json]
