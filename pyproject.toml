@@ -12,19 +12,30 @@ fastapi = "^0.100.0"
 uvicorn = "^0.22.0"
 sqlalchemy = "^2.0.17"
 pydantic = "^2.0.2"
-structlog = "^23.1.0"
-opentelemetry-api = "^1.18.0"
-opentelemetry-sdk = "^1.18.0"
-opentelemetry-instrumentation-fastapi = "^0.39b0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.6"
 aiofiles = "^23.1.0"
 
+# Observabilidade
+structlog = "^23.1.0"
+opentelemetry-api = "^1.20.0"
+opentelemetry-sdk = "^1.20.0"
+opentelemetry-instrumentation = "^0.41b0"
+opentelemetry-instrumentation-fastapi = "^0.41b0"
+opentelemetry-instrumentation-requests = "^0.41b0"
+opentelemetry-instrumentation-sqlalchemy = "^0.41b0"
+opentelemetry-instrumentation-logging = "^0.41b0"
+opentelemetry-exporter-otlp = "^1.20.0"
+opentelemetry-exporter-jaeger = "^1.20.0"
+prometheus-client = "^0.17.0"
+python-json-logger = "^2.0.7"
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 pytest-asyncio = "^0.21.0"
+pytest-mock = "^3.11.1"
 black = "^23.3.0"
 ruff = "^0.5.3"
 mypy = "^1.4.1"
@@ -32,6 +43,7 @@ bandit = "^1.7.5"
 safety = "^2.3.5"
 pre-commit = "^3.3.3"
 httpx = "^0.24.1"
+responses = "^0.23.3"
 
 [build-system]
 requires = ["poetry-core"]
@@ -45,6 +57,8 @@ include = '\.pyi?$'
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -53,9 +67,11 @@ select = [
     "C",  # flake8-comprehensions
     "B",  # flake8-bugbear
 ]
-ignore = []
+ignore = [
+    "C901",  # function is too complex (temporarily ignore)
+]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["src"]
 
 [tool.mypy]

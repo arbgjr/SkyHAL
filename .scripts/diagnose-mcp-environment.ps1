@@ -11,7 +11,7 @@ function Write-Header {
         [Parameter(Mandatory = $true)]
         [string]$Text
     )
-    
+
     Write-Host "`n===== $Text =====" -ForegroundColor Cyan
 }
 
@@ -67,11 +67,11 @@ try {
     $results.NodeJS.Installed = $true
     $results.NodeJS.Version = $nodeVersion
     $results.NodeJS.Path = $nodeCommand.Source
-    
+
     # Determinar se Node é 32 ou 64 bit
     $nodeArch = & node -e "console.log(process.arch)"
     $results.NodeJS.Is64Bit = ($nodeArch -eq "x64")
-    
+
     Write-Host "✅ Node.js está instalado" -ForegroundColor Green
     Write-Host "   Versão: $nodeVersion"
     Write-Host "   Caminho: $($nodeCommand.Source)"
@@ -91,7 +91,7 @@ try {
     $results.NPX.Found = $true
     $results.NPX.Path = $npxCommand.Source
     $results.NPX.Version = $npxVersion
-    
+
     Write-Host "✅ NPX está instalado" -ForegroundColor Green
     Write-Host "   Versão: $npxVersion"
     Write-Host "   Caminho: $($npxCommand.Source)"
@@ -108,21 +108,21 @@ try {
     $npmCommand = Get-Command npm -ErrorAction Stop
     $npmVersion = & npm --version
     $npmPrefix = & npm config get prefix
-    
+
     $results.NPM.Found = $true
     $results.NPM.Path = $npmCommand.Source
     $results.NPM.Version = $npmVersion
     $results.NPM.GlobalPrefix = $npmPrefix
-    
+
     Write-Host "✅ NPM está instalado" -ForegroundColor Green
     Write-Host "   Versão: $npmVersion"
     Write-Host "   Caminho: $($npmCommand.Source)"
     Write-Host "   Prefixo Global: $npmPrefix"
-    
+
     # Verificar pacotes MCP instalados globalmente
     Write-Host "`nVerificando pacotes MCP instalados globalmente..."
     $globalPackages = & npm list -g --depth=0 2>$null
-    
+
     $mcpPackages = @(
         "@modelcontextprotocol/server-github",
         "@modelcontextprotocol/server-filesystem",
@@ -130,7 +130,7 @@ try {
         "@modelcontextprotocol/server-sequential-thinking",
         "@modelcontextprotocol/server-everything"
     )
-    
+
     foreach ($pkg in $mcpPackages) {
         if ($globalPackages -like "*$pkg*") {
             $results.MCPPackages.Installed += $pkg
@@ -141,7 +141,7 @@ try {
             Write-Host "   ❌ $pkg não está instalado globalmente" -ForegroundColor Yellow
         }
     }
-    
+
 }
 catch {
     $results.NPM.Found = $false
@@ -157,7 +157,7 @@ try {
     $results.UVX.Found = $true
     $results.UVX.Path = $uvxCommand.Source
     $results.UVX.Version = $uvxVersion
-    
+
     Write-Host "✅ UVX está instalado" -ForegroundColor Green
     Write-Host "   Versão: $uvxVersion"
     Write-Host "   Caminho: $($uvxCommand.Source)"
@@ -201,14 +201,14 @@ Write-Header "Testando comando NPX diretamente"
 try {
     $tempDir = [System.IO.Path]::GetTempPath()
     $testOutput = Join-Path -Path $tempDir -ChildPath "npx-test-output.txt"
-    
+
     # Tente executar um comando simples com npx
     & npx --version > $testOutput 2>&1
     $testResult = Get-Content $testOutput -Raw
-    
+
     Write-Host "Resultado do teste NPX:"
     Write-Host $testResult
-    
+
     # Limpar
     if (Test-Path $testOutput) { Remove-Item $testOutput -Force }
 }
@@ -233,7 +233,7 @@ else {
         Write-Host "⚠️ ATENÇÃO: Node.js 32-bit está instalado em um sistema 64-bit" -ForegroundColor Yellow
         Write-Host "   RECOMENDAÇÃO: Considere instalar a versão 64-bit do Node.js" -ForegroundColor Yellow
     }
-    
+
     if ($results.MCPPackages.Missing.Count -gt 0) {
         Write-Host "⚠️ ATENÇÃO: Alguns pacotes MCP não estão instalados globalmente" -ForegroundColor Yellow
         Write-Host "   RECOMENDAÇÃO: Instale os pacotes globalmente com:" -ForegroundColor Yellow
@@ -249,7 +249,7 @@ try {
     if (-not (Test-Path $logDir)) {
         New-Item -Path $logDir -ItemType Directory -Force | Out-Null
     }
-    
+
     $results | ConvertTo-Json -Depth 5 | Out-File -FilePath $diagnosticoPath -Force
     Write-Host "`n📊 Diagnóstico completo salvo em: $diagnosticoPath" -ForegroundColor Green
 }

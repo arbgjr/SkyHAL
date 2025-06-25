@@ -24,6 +24,9 @@ def create_app(testing: bool = False) -> FastAPI:
     # Incluindo rotas
     app.include_router(health.router, tags=["health"])
 
+    # TODO: Configurar observabilidade quando o middleware estiver pronto
+    # Middleware de observabilidade será adicionado aqui
+
     return app
 
 

@@ -2,7 +2,7 @@
  Executado automaticamente pelo hook Git post-checkout
  Instala extensões VS Code necessárias ao projeto.
 #>
- 
+
 Write-Host "[INFO] Iniciando instalação dinâmica de extensões VS Code..." -ForegroundColor Cyan
 $extensionsFile = Join-Path $PSScriptRoot "..\.vscode\extensions.json"
 if (-Not (Test-Path $extensionsFile)) {

@@ -1,0 +1,44 @@
+# Configurações específicas para desenvolvimento
+observability:
+  logging:
+    level: "DEBUG"
+
+  metrics:
+    red_metrics:
+      enabled: true
+    custom_metrics:
+      business_metrics: false  # Desabilitado em dev
+      system_metrics: true
+
+  tracing:
+    sampling_ratio: 1.0  # 100% sampling em dev
+
+  exporters:
+    prometheus:
+      enabled: true
+      port: 8000
+
+    jaeger:
+      enabled: true
+      endpoint: "http://localhost:14268/api/traces"
+
+    otlp:
+      enabled: false
+
+    loki:
+      enabled: false
+
+# Configurações de infraestrutura local
+infrastructure:
+  jaeger:
+    ui_port: 16686
+    collector_port: 14268
+
+  prometheus:
+    ui_port: 9090
+    scrape_interval: "15s"
+
+  grafana:
+    ui_port: 3000
+    admin_user: "admin"
+    admin_password: "admin"

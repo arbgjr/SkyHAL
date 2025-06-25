@@ -198,6 +198,6 @@
 	"chat.modeFilesLocations": {
 		".github/chatmodes": true
 	},
-	
+
 	"github.copilot.chat.welcomeMessage": "Olá! Bora programar?"
 }

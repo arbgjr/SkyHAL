@@ -1,0 +1,59 @@
+# Configurações específicas para produção
+observability:
+  logging:
+    level: "INFO"
+
+  metrics:
+    red_metrics:
+      enabled: true
+    custom_metrics:
+      business_metrics: true
+      system_metrics: true
+
+  tracing:
+    sampling_ratio: 0.01  # 1% sampling em produção
+
+  exporters:
+    prometheus:
+      enabled: true
+      port: 8000
+
+    jaeger:
+      enabled: true
+      endpoint: "${JAEGER_ENDPOINT}"
+
+    otlp:
+      enabled: true
+      endpoint: "${OTLP_ENDPOINT}"
+
+    loki:
+      enabled: true
+      endpoint: "${LOKI_ENDPOINT}"
+      tenant_id: "${LOKI_TENANT_ID}"
+
+# Configurações de alertas
+alerts:
+  enabled: true
+
+  rules:
+    high_error_rate:
+      enabled: true
+      threshold: 0.05  # 5% error rate
+      duration: "5m"
+
+    high_latency:
+      enabled: true
+      threshold: 0.5   # 500ms
+      percentile: 95
+      duration: "2m"
+
+    low_availability:
+      enabled: true
+      threshold: 0.99  # 99% availability
+      duration: "1m"
+
+# Configurações de retenção
+retention:
+  metrics: "30d"
+  traces: "7d"
+  logs: "14d"

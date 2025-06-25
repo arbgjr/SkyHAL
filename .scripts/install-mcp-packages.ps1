@@ -9,7 +9,7 @@ Write-Host "📦 Instalando pacotes MCP globalmente..." -ForegroundColor Cyan
 try {
     $nodeVersion = node -v
     $npmVersion = npm -v
-    
+
     Write-Host "✅ Node.js $nodeVersion está instalado" -ForegroundColor Green
     Write-Host "✅ NPM $npmVersion está instalado" -ForegroundColor Green
 } catch {

@@ -56,11 +56,11 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Integracao.Saida, MSG.Shared.Kafka
 - **Descrição do Débito**: Migração do microserviço MSG.Integracao.Saida para utilizar o núcleo Kafka compartilhado (MSG.Shared.Kafka), seguindo o padrão já adotado nos demais microserviços.
 - **Motivo da Decisão Atual**: Padronização da infraestrutura de mensageria Kafka em todos os microserviços do projeto.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Possível instabilidade durante a transição
   - Necessidade de reconfiguração de ambientes
   - Ajustes em monitoramento e observabilidade
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   - Implementar adaptador Kafka usando MSG.Shared.Kafka
   - Atualizar configurações e dependências
   - Garantir observabilidade via OpenTelemetry
@@ -69,8 +69,8 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Prioridade Estimada**: Alta
 - **Status**: Em Progresso
 - **Issue/Task Relacionada**: N/A
-- **Data de Resolução (se aplicável)**: 
-- **Notas Adicionais**: 
+- **Data de Resolução (se aplicável)**:
+- **Notas Adicionais**:
   - Impacto em métricas e logs existentes
   - Necessidade de atualização da documentação de operação
   - Considerar janela de implantação para minimizar impacto
@@ -84,12 +84,12 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Mensagem.EntradaIntegracao, MSG.Mensagem.Envio, MSG.Mensagem.Recebimento, MSG.Shared.Infrastructure
 - **Descrição do Débito**: Existem microserviços ainda utilizando implementação legada de Kafka (MSG.Shared.Infrastructure.Services.KafkaService) ou com implementações próprias. É necessário migrar todos para usar o núcleo compartilhado MSG.Shared.Kafka.
 - **Motivo da Decisão Atual**: A migração está sendo feita gradualmente para minimizar riscos e impacto nas funcionalidades existentes.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Duplicidade de código e configurações
   - Dificuldade de manutenção
   - Falta de padronização na observabilidade
   - Inconsistência no tratamento de erros e resiliência
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   1. Migrar cada microserviço pendente:
      - ✅ MSG.Integracao.Saida (CONCLUÍDO 14/06/2025)
      - ✅ MSG.Mensagem.EntradaIntegracao (CONCLUÍDO 14/06/2025)
@@ -108,7 +108,7 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Status**: Resolvido
 - **Issue/Task Relacionada**: N/A
 - **Data de Resolução (se aplicável)**: 2025-06-14
-- **Notas Adicionais**: 
+- **Notas Adicionais**:
   - ✅ **MIGRAÇÃO 100% COMPLETA** - Todos os 9 microserviços migrados com sucesso
   - ✅ MSG.Mensagem.EntradaIntegracao migrado com sucesso (14/06/2025)
   - ✅ MSG.Mensagem.Envio migrado com sucesso
@@ -142,11 +142,11 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: Todos os projetos de teste (*.Tests)
 - **Descrição do Débito**: Após a remoção de todos os testes de integração, é necessário revisar e refatorar os testes unitários existentes para garantir cobertura de código adequada sem depender de recursos externos como Kafka, MQ Series, etc.
 - **Motivo da Decisão Atual**: A decisão de remover os testes de integração foi tomada para simplificar a execução dos testes unitários via dotnet test, evitando dependências externas.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Cobertura de código reduzida
   - Possíveis falhas não detectadas nos testes unitários
   - Comportamentos de integração não testados adequadamente
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   1. Revisar todos os projetos de teste
   2. Implementar mocks adequados para simular comportamentos de serviços externos
   3. Aumentar cobertura dos testes unitários
@@ -155,8 +155,8 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Prioridade Estimada**: Alta
 - **Status**: Em Progresso
 - **Issue/Task Relacionada**: N/A
-- **Data de Resolução (se aplicável)**: 
-- **Notas Adicionais**: 
+- **Data de Resolução (se aplicável)**:
+- **Notas Adicionais**:
   - ✅ MSG.Integracao.Saida.Tests - testes unitários atualizados e executando com sucesso
   - ✅ MSG.Mensagem.EntradaIntegracao.Tests - testes unitários atualizados e executando com sucesso
   - ✅ MSG.Mensagem.Envio.Tests - testes unitários atualizados e executando com sucesso
@@ -177,11 +177,11 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Shared.Testing.Kafka
 - **Descrição do Débito**: Após a remoção dos testes de integração dos projetos, o MSG.Shared.Testing.Kafka continua com dependências do Testcontainers e implementações voltadas para testes de integração que não são mais utilizadas.
 - **Motivo da Decisão Atual**: A decisão de remover os testes de integração foi priorizada nos projetos principais, deixando o MSG.Shared.Testing.Kafka para uma refatoração posterior.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Dependências desnecessárias no projeto
   - Confusão sobre o propósito do projeto (agora deveria focar apenas em testes unitários)
   - Manutenção de código não utilizado
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   1. Refatorar o MSG.Shared.Testing.Kafka para focar apenas em utilitários para testes unitários
   2. Remover dependências de Testcontainers e Testcontainers.Kafka
   3. Remover implementação do KafkaIntegrationTestBase
@@ -191,7 +191,7 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Status**: Resolvido
 - **Issue/Task Relacionada**: N/A
 - **Data de Resolução (se aplicável)**: 2024-06-13
-- **Notas Adicionais**: 
+- **Notas Adicionais**:
   - ✅ .csproj atualizado para remover dependências de Testcontainers
   - ✅ Removidas dependências de projetos a MSG.Shared.Testing.Kafka nos projetos de teste
   - ✅ Criado KafkaMockProvider para simulação de produtores e consumidores Kafka
@@ -205,7 +205,7 @@ Para cada débito técnico, utilize o seguinte formato:
   - ✅ Atualizada documentação no README.md com exemplos e instruções de uso
   - ✅ Validado que todos os outros projetos de teste agora usam apenas abordagens de mock
   - ✅ Refatorado todos os arquivos restantes para focar apenas em testes unitários
-  
+
   Para o futuro, considerar:
   - Renomear o projeto para MSG.Shared.Testing.UnitTests para refletir melhor seu propósito
   - Adicionar mais exemplos e casos de uso conforme necessário
@@ -220,16 +220,16 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Shared.Encryption.Tests, MSG.Shared.Observability.Tests
 - **Descrição do Débito**: Os testes unitários em MSG.Shared.Encryption.Tests estão falhando devido a restrições de segurança do sistema operacional que impedem a exportação de chaves privadas (CryptographicException). Os testes em MSG.Shared.Observability.Tests falham por problemas relacionados a configurações de ambiente e observabilidade.
 - **Motivo da Decisão Atual**: Priorização da migração para MSG.Shared.Kafka e remoção de testes de integração, deixando esses problemas específicos para uma resolução posterior.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Testes unitários falhando podem mascarar problemas reais
   - Redução da confiança na cobertura de testes
   - Possível degradação da qualidade do código ao longo do tempo
   - Build de CI/CD falha devido a esses testes
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   1. Para MSG.Shared.Encryption.Tests:
      - Refatorar o método `ExportPrivateKeyToPem` em CertificateFixture.cs para evitar o uso de `ExportPkcs8PrivateKey()` que está causando o erro de segurança
      - Implementar um wrapper para operações criptográficas que possa ser mockado em ambiente de testes
-     - Usar certificados de teste específicos (autossinados) que permitam exportação 
+     - Usar certificados de teste específicos (autossinados) que permitam exportação
      - Considerar implementar um mock completo para a classe X509Certificate2 nos testes
   2. Para MSG.Shared.Observability.Tests:
      - Corrigir o teste `CreateObservabilityScope_WithActivity_AddsTraceInfo` (linha 172) para garantir propagação correta do TraceID
@@ -238,8 +238,8 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Prioridade Estimada**: Média
 - **Status**: Aberto
 - **Issue/Task Relacionada**: N/A
-- **Data de Resolução (se aplicável)**: 
-- **Notas Adicionais**: 
+- **Data de Resolução (se aplicável)**:
+- **Notas Adicionais**:
   - MSG.Shared.Encryption.Tests tem 34 falhas, todas relacionadas ao mesmo erro criptográfico
   - O erro em MSG.Shared.Encryption.Tests ocorre na linha 134 do arquivo CertificateFixture.cs:
     ```csharp
@@ -264,12 +264,12 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Shared.Infrastructure (VaultService)
 - **Descrição do Débito**: A implementação anterior do VaultService tinha limitações de observabilidade e resiliência, sem suporte adequado para métricas detalhadas, cache, circuit breaker e tratamento padronizado de erros.
 - **Motivo da Decisão Atual**: Necessidade de melhorar a confiabilidade e monitoramento dos serviços que dependem do Vault para recuperar segredos.
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Falhas cascata quando o Vault está indisponível
   - Dificuldade em diagnosticar problemas relacionados ao acesso de segredos
   - Desempenho reduzido devido a chamadas repetidas ao Vault
   - Falta de visibilidade em problemas de acesso a segredos
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   - ✅ Implementação de métricas detalhadas e tracing completo no ObservableVaultService
   - ✅ Implementação de cache local para reduzir chamadas ao Vault via CachedVaultServiceDecorator
   - ✅ Integração com Polly para circuit breaker, timeout e retry policies
@@ -280,7 +280,7 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Status**: Resolvido
 - **Issue/Task Relacionada**: N/A
 - **Data de Resolução (se aplicável)**: 2024-06-14
-- **Notas Adicionais**: 
+- **Notas Adicionais**:
   - Foram criados novos decoradores e adaptadores seguindo padrões de design
   - Sistema de cache implementado com tempo de expiração configurável
   - Testes automatizados criados para validar observabilidade e cache
@@ -296,11 +296,11 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Componente(s) Afetado(s)**: MSG.Mensagem.EntradaIntegracao
 - **Descrição do Débito**: O serviço estava enviando mensagens para o tópico "MensagensDisponiveis" em vez do tópico correto "MensagensFormatadas", causando inconsistência no fluxo de processamento de mensagens.
 - **Motivo da Decisão Atual**: Bug de configuração onde o serviço estava usando `OutputMessageTopic` (mapeado para "MensagensDisponiveis") em vez de `FormattedMessageTopic` (mapeado para "MensagensFormatadas").
-- **Impacto Potencial/Riscos**: 
+- **Impacto Potencial/Riscos**:
   - Mensagens não chegavam ao tópico esperado pelos serviços downstream
   - Falha na cadeia de processamento de mensagens
   - Dificuldade de rastreamento e debug do fluxo de dados
-- **Sugestão de Solução Ideal**: 
+- **Sugestão de Solução Ideal**:
   1. ✅ Corrigir o Program.cs para usar `FormattedMessageTopic` em vez de `OutputMessageTopic`
   2. ✅ Atualizar MensagemEntradaOrquestradorService para usar o tópico correto
   3. ✅ Atualizar testes e documentação para refletir o tópico correto
@@ -309,7 +309,7 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Status**: Resolvido
 - **Issue/Task Relacionada**: N/A
 - **Data de Resolução (se aplicável)**: 2025-06-17
-- **Notas Adicionais**: 
+- **Notas Adicionais**:
   - ✅ **CORREÇÃO COMPLETA** - Bug corrigido com sucesso
   - ✅ Program.cs atualizado para ler `FormattedMessageTopic` da configuração
   - ✅ MensagemEntradaOrquestradorService corrigido para usar `_config.Kafka.FormattedMessageTopic`
@@ -332,9 +332,40 @@ Para cada débito técnico, utilize o seguinte formato:
 - **Sugestão de Solução Ideal**: Implementar mocks para dependências externas nos testes, validar estado do ambiente após execução, adotar logging estruturado (JSON) nos scripts para integração com pipelines e observabilidade.
 - **Prioridade Estimada**: Média
 - **Status**: Aberto
-- **Issue/Task Relacionada**: 
-- **Data de Resolução (se aplicável)**: 
+- **Issue/Task Relacionada**:
+- **Data de Resolução (se aplicável)**:
 - **Notas Adicionais**: Atualizar este registro ao evoluir a cobertura de testes ou logging dos scripts.
+
+---
+
+### TD010 - Restrição de Docker para Ambiente WSL Apenas
+
+- **Data Identificado**: 2025-06-24
+- **Identificado Por**: @armando.guimaraes
+- **Componente(s) Afetado(s)**: Stack de Observabilidade (Grafana/Prometheus/Jaeger), Docker Compose, Scripts de Setup
+- **Descrição do Débito**: Docker só funciona em ambiente WSL no projeto SkyHAL, limitando a execução da stack de observabilidade em ambientes Windows nativos. Todos os scripts e documentação devem considerar essa restrição.
+- **Motivo da Decisão Atual**: Limitação do ambiente de desenvolvimento atual e configuração específica da máquina.
+- **Impacto Potencial/Riscos**:
+  - Desenvolvedores em Windows não conseguem executar a stack completa de observabilidade
+  - Necessidade de configurar WSL para todos os desenvolvedores
+  - Scripts de setup podem falhar silenciosamente em Windows nativo
+  - Documentação precisa ser clara sobre esse pré-requisito
+- **Sugestão de Solução Ideal**:
+  1. Atualizar toda documentação para incluir pré-requisito WSL
+  2. Adicionar verificação nos scripts de setup para detectar ambiente WSL
+  3. Considerar alternativas para Windows nativo (Podman, Docker Desktop alternativo)
+  4. Implementar fallback ou modo de desenvolvimento sem Docker
+- **Prioridade Estimada**: Média
+- **Status**: Documentado
+- **Issue/Task Relacionada**: Issue #10 - Observabilidade
+- **Data de Resolução (se aplicável)**:
+- **Notas Adicionais**:
+  - ✅ Documentação atualizada em `infra/README.md` e `docs/observabilidade/README.md`
+  - ✅ Informação registrada no Memory Bank System
+  - Considerar no futuro:
+    - Scripts com detecção automática de ambiente
+    - Documentação específica para setup WSL
+    - Alternativas de desenvolvimento local sem Docker
 
 ---
 

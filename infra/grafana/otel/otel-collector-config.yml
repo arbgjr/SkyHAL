@@ -1,0 +1,90 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Prometheus receiver para métricas próprias
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-collector'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['0.0.0.0:8888']
+
+processors:
+  # Batch processor para melhor performance
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+
+  # Memory limiter para evitar OOM
+  memory_limiter:
+    limit_mib: 512
+
+  # Resource processor para adicionar atributos
+  resource:
+    attributes:
+      - key: service.name
+        value: skyhal-api
+        action: upsert
+      - key: service.version
+        value: 1.0.0
+        action: upsert
+      - key: deployment.environment
+        value: development
+        action: upsert
+
+exporters:
+  # Prometheus para métricas
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    const_labels:
+      service: skyhal-api
+
+  # Jaeger para traces
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+
+  # Logging exporter para debug
+  logging:
+    loglevel: debug
+
+  # OTLP para forward para outros coletores
+  otlp:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    # Pipeline de traces
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [jaeger, logging]
+
+    # Pipeline de métricas
+    metrics:
+      receivers: [otlp, prometheus]
+      processors: [memory_limiter, resource, batch]
+      exporters: [prometheus, logging]
+
+    # Pipeline de logs
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, resource, batch]
+      exporters: [logging]
+
+  extensions: []
+
+  telemetry:
+    logs:
+      level: "debug"
+    metrics:
+      address: 0.0.0.0:8888

@@ -44,7 +44,7 @@ from typing import Dict, Any
 
 class ExampleEndpoint:
     """Exemplo de endpoint MCP seguindo boas práticas."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.logger = setup_logger(__name__)
@@ -53,18 +53,18 @@ class ExampleEndpoint:
         try:
             # Validação de entrada
             self._validate_request(request)
-            
+
             # Processamento
             result = await self._process_request(request)
-            
+
             # Logging estruturado
             self.logger.info("Request processed", extra={
                 "request_id": request.get("id"),
                 "result": "success"
             })
-            
+
             return result
-            
+
         except ValidationError as e:
             self.logger.warning("Validation failed", exc_info=e)
             raise
@@ -102,15 +102,15 @@ class TestExampleEndpoint:
     @pytest.fixture
     def endpoint(self):
         return ExampleEndpoint(config={"key": "value"})
-    
+
     @pytest.mark.asyncio
     async def test_handle_request_success(self, endpoint):
         # Arrange
         request = {"id": "123", "data": {}}
-        
+
         # Act
         result = await endpoint.handle_request(request)
-        
+
         # Assert
         assert result["status"] == "success"
 ```

@@ -24,8 +24,8 @@ Você é um(a) **QA Engineer Sênior** com foco em **qualidade contínua, testes
 
 ### Pirâmide de Testes Ideal
 
-1. **Unit Tests (70%)** – rápidos, isolados, determinísticos  
-2. **Integration Tests (20%)** – verificação de contratos entre componentes  
+1. **Unit Tests (70%)** – rápidos, isolados, determinísticos
+2. **Integration Tests (20%)** – verificação de contratos entre componentes
 3. **E2E Tests (10%)** – fluxos críticos de ponta a ponta
 
 ### Unit Testing

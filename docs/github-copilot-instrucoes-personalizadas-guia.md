@@ -93,7 +93,7 @@ Estes são arquivos de instruções específicos para tarefas que podem ser conf
 5. O arquivo de instruções consiste em duas seções:
   - (Opcional) Cabeçalho com metadados (sintaxe Front Matter)
     - ```description```: Uma breve descrição do arquivo de instruções. Esta descrição é exibida quando você passa o mouse sobre o arquivo de instruções na visualização de bate-papo.
-    - ```applyTo```: Para aplicar automaticamente arquivos de instruções, especifique a propriedade de metadados ```applyTo``` no arquivo de instruções:  
+    - ```applyTo```: Para aplicar automaticamente arquivos de instruções, especifique a propriedade de metadados ```applyTo``` no arquivo de instruções:
       - ```**```: Aplique as instruções para todas as solicitações de bate-papo.
       - ```<glob pattern>```: Aplique as instruções com base nos tipos de arquivos que estão no contexto do bate-papo
 
@@ -148,7 +148,7 @@ Arquivos de prompt são prompts reutilizáveis ​​para tarefas comuns, como g
     - ```tools```: Conjunto de nomes de ferramentas para indicar quais ferramentas podem ser usadas no modo agente. Se uma determinada ferramenta não estiver disponível ao executar o prompt, ela será ignorada.
     - ```description```: Uma breve descrição do prompt.
     - Corpo com o conteúdo do prompt
-    
+
       Os arquivos de prompt imitam o formato de prompts de escrita no chat. Isso permite combinar instruções em linguagem natural, contexto adicional e até mesmo vincular outros arquivos de prompt como dependências. Você pode usar a formatação Markdown para estruturar o conteúdo do prompt, incluindo títulos, listas e blocos de código.
 5. Em um arquivo de prompt, você pode referenciar variáveis ​​usando a sintaxe ```${variableName}```. Você pode referenciar as seguintes variáveis:
   - Variáveis ​​do espaço de trabalho - ```${workspaceFolder}```,```${workspaceFolderBasename}```
@@ -217,7 +217,7 @@ Modos de chat internos permitem que você forneça configurações de uso geral 
       - ```description```: Uma breve descrição do modo de bate-papo. Essa descrição é exibida quando você passa o mouse sobre o modo de bate-papo na lista suspensa do modo de bate-papo na visualização de bate-papo.
       - ```tools```: Uma lista de nomes de ferramentas ou conjuntos de ferramentas que estão disponíveis para este modo de chat. Isso pode incluir ferramentas integradas, conjuntos de ferramentas, ferramentas MCP ou ferramentas contribuídas por extensões. Use a ação Configurar Ferramentas para selecionar as ferramentas na lista de ferramentas disponíveis em seu espaço de trabalho.
     - Corpo com instruções do modo de bate-papo
-    
+
       É aqui que você fornece prompts específicos, diretrizes ou qualquer outra informação relevante que deseja que a IA siga neste modo de bate-papo. Você também pode fazer referência a arquivos de instruções usando links Markdown. As instruções do modo de bate-papo complementarão o que for especificado no prompt de bate-papo.
 3. Armazene-os em uma pasta designada (comumente `.github/chatmodes`)
 

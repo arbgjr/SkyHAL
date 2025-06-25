@@ -59,10 +59,10 @@ def test_user_service_create_user_returns_created_user():
     # Arrange
     user_data = {"name": "Test User", "email": "test@example.com"}
     user_service = UserService()
-    
+
     # Act
     result = user_service.create_user(user_data)
-    
+
     # Assert
     assert result.name == user_data["name"]
     assert result.email == user_data["email"]

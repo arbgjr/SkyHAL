@@ -168,7 +168,7 @@ O sistema opera com uma lista de permissões e proibições, associadas a perfis
 Mecanismo que define a necessidade de revisão humana com base no perfil de risco da ferramenta.
 
 ```yaml
-interface ApprovalWorkflow 
+interface ApprovalWorkflow
 {
   autoApprove(tool: GeneratedTool): boolean;
   requiresReview(tool: GeneratedTool): ReviewLevel;
@@ -232,13 +232,13 @@ As configurações globais do SkyHAL controlam seu comportamento geral e o apeti
 
 Implementar ferramentas que aprendem com o uso, se auto-otimizam e passam por testes A/B para encontrar a implementação mais eficiente.
 
-### Fase 2: Inteligência Colaborativa: 
+### Fase 2: Inteligência Colaborativa:
 
 Desenvolver ferramentas que podem se invocar mutuamente em uma cadeia de dependências (DAG), formando um ecossistema colaborativo e especializado.
 
 ### Fase 3: Arquitetura Cognitiva:
 
-Construir meta-ferramentas para gerenciar o próprio ecossistema, prever a necessidade de novas ferramentas e desenvolver capacidades de autorrecuperação (self-healing). 
+Construir meta-ferramentas para gerenciar o próprio ecossistema, prever a necessidade de novas ferramentas e desenvolver capacidades de autorrecuperação (self-healing).
 A introdução de Tool Memory Embedding será crucial nesta fase para busca semântica e clusterização de capacidades.
 
 ## 9. Disclaimer
@@ -268,4 +268,3 @@ Este projeto oferece um DevContainer Linux pronto para uso, com as principais de
 
 #### Dúvidas ou problemas?
 Consulte o arquivo `.devcontainer/devcontainer.json` para detalhes de configuração ou abra uma issue.
-

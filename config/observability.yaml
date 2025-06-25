@@ -1,0 +1,117 @@
+# Configuração principal de observabilidade
+observability:
+  service:
+    name: "skyhal-api"
+    version: "0.1.0"
+    environment: "${ENVIRONMENT:development}"
+    instance_id: "${HOSTNAME:localhost}"
+
+  # Configuração de Logging
+  logging:
+    level: "${LOG_LEVEL:INFO}"
+    format: "json"
+    structured: true
+    include_trace_info: true
+    sanitize_sensitive_data: true
+
+    fields:
+      service_name: "${SERVICE_NAME:skyhal-api}"
+      service_version: "${SERVICE_VERSION:0.1.0}"
+      environment: "${ENVIRONMENT:development}"
+
+    sensitive_fields:
+      - password
+      - token
+      - secret
+      - key
+      - authorization
+      - x-api-key
+
+  # Configuração de Métricas
+  metrics:
+    enabled: true
+    prefix: "skyhal"
+
+    # Métricas RED (Rate, Errors, Duration)
+    red_metrics:
+      enabled: true
+      request_counter: "http_requests_total"
+      error_counter: "http_errors_total"
+      duration_histogram: "http_request_duration_seconds"
+
+    # Métricas customizadas
+    custom_metrics:
+      enabled: true
+      business_metrics: true
+      system_metrics: true
+
+    # Configuração de Labels
+    default_labels:
+      service: "${SERVICE_NAME:skyhal-api}"
+      version: "${SERVICE_VERSION:0.1.0}"
+      environment: "${ENVIRONMENT:development}"
+
+  # Configuração de Tracing
+  tracing:
+    enabled: true
+    sampling_ratio: "${TRACING_SAMPLING_RATIO:0.1}"
+
+    # Instrumentações automáticas
+    auto_instrumentation:
+      fastapi: true
+      sqlalchemy: true
+      requests: true
+      logging: true
+
+    # Configuração de Spans
+    span_config:
+      max_attributes: 128
+      max_events: 128
+      max_links: 128
+      attribute_value_length_limit: 512
+
+    # Recursos incluídos
+    resource_attributes:
+      service.name: "${SERVICE_NAME:skyhal-api}"
+      service.version: "${SERVICE_VERSION:0.1.0}"
+      service.environment: "${ENVIRONMENT:development}"
+      service.instance.id: "${HOSTNAME:localhost}"
+
+  # Configuração de Exportadores
+  exporters:
+    prometheus:
+      enabled: true
+      port: "${PROMETHEUS_PORT:8000}"
+      path: "/metrics"
+      include_target_info: true
+
+    jaeger:
+      enabled: true
+      endpoint: "${JAEGER_ENDPOINT:http://localhost:14268/api/traces}"
+      timeout: 30
+      compression: "gzip"
+
+    otlp:
+      enabled: false
+      endpoint: "${OTLP_ENDPOINT:http://localhost:4317}"
+      insecure: true
+      timeout: 30
+
+    loki:
+      enabled: false
+      endpoint: "${LOKI_ENDPOINT:http://localhost:3100/loki/api/v1/push}"
+      tenant_id: "${LOKI_TENANT_ID:}"
+
+  # Configuração de Health Checks
+  health_checks:
+    enabled: true
+    endpoint: "/health"
+    detailed_endpoint: "/health/detailed"
+
+    checks:
+      - name: "observability_stack"
+        enabled: true
+      - name: "metrics_exporter"
+        enabled: true
+      - name: "tracing_exporter"
+        enabled: true

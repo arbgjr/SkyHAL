@@ -542,10 +542,10 @@ Ao gerar documentação:
 ```python
 class UserService:
     """Serviço para gerenciamento de usuários.
-    
+
     Responsável por todas operações relacionadas a usuários,
     incluindo CRUD, autenticação e validação.
-    
+
     Attributes:
         repo (UserRepository): Repositório de usuários
         auth_service (AuthService): Serviço de autenticação
@@ -553,16 +553,16 @@ class UserService:
 
     def create_user(self, data: Dict[str, Any]) -> User:
         """Cria um novo usuário.
-        
+
         Args:
             data (Dict[str, Any]): Dados do usuário contendo:
                 - username (str): Nome de usuário
                 - email (str): Email
                 - password (str): Senha não-criptografada
-        
+
         Returns:
             User: Usuário criado com ID gerado
-            
+
         Raises:
             ValidationError: Se dados inválidos
             ConflictError: Se usuário já existe
@@ -588,14 +588,14 @@ async def create_user(
     service: UserService = Depends(get_user_service)
 ) -> UserResponse:
     """Cria um novo usuário.
-    
+
     Args:
         user (UserCreate): Dados do usuário
         service (UserService): Serviço injetado
-    
+
     Returns:
         UserResponse: Usuário criado
-        
+
     Raises:
         HTTPException: 400 se dados inválidos
         HTTPException: 409 se usuário existe
