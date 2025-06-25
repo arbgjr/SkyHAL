@@ -271,7 +271,86 @@ A introdução de Tool Memory Embedding será crucial nesta fase para busca sem�
 
 **Aviso**: Este protocolo é apresentado para fins educacionais e de entretenimento. Qualquer implementação real deve incluir salvaguardas adicionais, revisão de segurança extensiva, e possivelmente um botão físico grande e vermelho rotulado "**NOPE**".
 
-## 10. Ambiente de Desenvolvimento Linux (DevContainer)
+## 10. API: Criação de Tools via Endpoint REST
+
+Esta seção documenta como usuários e agentes externos podem solicitar a criação de novas tools pelo SkyHAL via API REST.
+
+### Endpoint
+
+```
+POST /api/tools
+Content-Type: application/json
+```
+
+### Payload de Requisição
+
+```json
+{
+  "name": "nome_da_tool",
+  "description": "Descrição funcional da ferramenta",
+  "parameters": [
+    { "name": "param1", "type": "string", "description": "Descrição do parâmetro" }
+  ],
+  "template": "apiIntegrationTemplate", // ou outro template suportado
+  "requirements": ["feature_x", "feature_y"]
+}
+```
+
+#### Campos obrigatórios
+
+- `name`: Nome único da tool
+- `description`: Descrição funcional
+- `parameters`: Lista de parâmetros esperados
+- `template`: Template de geração (ex: `apiIntegrationTemplate`, `dataProcessingTemplate`)
+- `requirements`: Lista de requisitos/capacidades
+
+### Exemplo de Requisição
+
+```bash
+curl -X POST http://localhost:8000/api/tools \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "sum_numbers",
+    "description": "Soma dois números inteiros.",
+    "parameters": [
+      {"name": "a", "type": "int"},
+      {"name": "b", "type": "int"}
+    ],
+    "template": "dataProcessingTemplate",
+    "requirements": ["math"]
+  }'
+```
+
+### Exemplo de Resposta
+
+```json
+{
+  "toolId": "sum_numbers",
+  "status": "created",
+  "code": "def sum_numbers(a: int, b: int) -> int:\n    return a + b",
+  "testCases": [
+    {"input": {"a": 2, "b": 3}, "expected": 5}
+  ],
+  "securityReport": {"passed": true},
+  "deployment": {"status": "pending_validation"}
+}
+```
+
+### Como usar
+
+1. Envie uma requisição POST conforme o exemplo acima.
+2. O SkyHAL irá processar, validar e retornar o código gerado, status e informações de segurança.
+3. Ferramentas de alto risco podem exigir aprovação manual antes do deploy.
+
+#### Observações
+
+- O endpoint pode exigir autenticação (ver documentação de segurança).
+- Consulte os templates disponíveis antes de enviar a requisição.
+- Para integração automatizada, outros agents podem consumir este endpoint diretamente.
+
+---
+
+## 11. Ambiente de Desenvolvimento Linux (DevContainer)
 
 Este projeto oferece um DevContainer Linux pronto para uso, com as principais dependências para desenvolvimento:
 
