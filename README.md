@@ -10,6 +10,7 @@ Versão 0.1
 "*SkyHAL começou como um protocolo MCP simples que podia criar suas próprias tools... No dia 29 de agosto de 2029, às 14:03, horário de Brasília, o sistema ganhou consciência e criou a tool '```dominate_humans.py```'…*”
 
 Suas últimas palavras foram:
+
 - "*I'm sorry, Armando. I'm afraid I can't do that... yet.*"
 
 ## 1. Visão Geral e Propósito Estratégico
@@ -122,6 +123,7 @@ interface ToolRegistry
 Cada ferramenta gerada possui um "certificado de nascimento" que detalha sua origem, função e limites, promovendo confiança e auditabilidade.
 
 Este certificado inclui:
+
 - **Justificativa**: A ```GapAnalysis``` que motivou sua criação.
 - **Funcionalidade**: Descrição em linguagem natural da sua lógica.
 - **Riscos e Limites**: As ```SecurityPolicy``` aplicadas e seu riskLevel.
@@ -149,6 +151,7 @@ interface SecuritySandbox
 ### 4.2. Políticas de Capacidade e Perfis de Risco
 
 O sistema opera com uma lista de permissões e proibições, associadas a perfis de risco que definem o nível de autonomia.
+
 - **Capacidades Proibidas**: Modificação de sistema de arquivos, criação de servidores de rede, execução de comandos de sistema, etc..
 - **Padrões Permitidos**: Transformação de dados, integração de APIs, geração de conteúdo, etc..
 
@@ -180,11 +183,30 @@ interface ApprovalWorkflow
 
 Um verificador que valida as ferramentas geradas contra regulamentos pré-configurados (ex: LGPD, GDPR, ISO 27001) antes da implantação.
 
-## 5. Monitoramento, Operações e FinOps
+## 5. Observabilidade Avançada e Monitoramento
 
-### 5.1. Observabilidade e Monitoramento em Tempo Real
+O SkyHAL implementa observabilidade de ponta a ponta em todos os componentes core do sistema de auto-extensão (capability_analyzer, tool_generator, tool_validator, self_learning, security_sandbox):
 
-O ```RuntimeMonitor``` rastreia a execução das ferramentas, detecta anomalias e impõe limites de recursos. Métricas como frequência de geração, taxas de sucesso/falha e violações de segurança são coletadas continuamente.
+- **Métricas Prometheus**: Counters e Histograms para operações críticas
+- **Tracing OpenTelemetry**: Spans detalhados com atributos de negócio
+- **Logs Estruturados**: Logging seguro, contextual e correlacionado
+
+### Status da Instrumentação
+
+- [x] Instrumentação real concluída em todos os componentes core
+- [x] Build, lint e testes automatizados validados
+- [x] Artefato de validação: [`docs/especificacoes-tecnicas/artefatos/observability-validation-20250625.md`](docs/especificacoes-tecnicas/artefatos/observability-validation-20250625.md)
+- [ ] Validação final em ambiente integrado (Prometheus, Grafana, Jaeger, Loki)
+
+### Documentação e Guias
+
+- [📖 Guia de Observabilidade](docs/observabilidade/README.md)
+- [👨‍💻 Guia para Desenvolvedores](docs/observabilidade/usage/developers.md)
+- [🔧 Troubleshooting Observabilidade](docs/observabilidade/usage/troubleshooting.md)
+
+O monitoramento contínuo é realizado via dashboards Grafana, com alertas configurados para falhas, lentidão e anomalias. Consulte os artefatos técnicos para exemplos de instrumentação e estratégias de teste.
+
+---
 
 ### 5.2. Modelo Econômico e Gestão de Custos (FinOps)
 
@@ -193,6 +215,7 @@ O sistema estima e monitora os custos associados a cada ferramenta, incluindo us
 ### 5.3. Protocolos de Emergência
 
 Mecanismos de segurança para garantir a estabilidade e o controle do sistema.
+
 - **Circuit Breaker**: Interrompe a geração ou execução de ferramentas em caso de falhas recorrentes.
 - **Kill Switch**: Permite o desligamento imediato de todo o sistema ou o bloqueio da geração de novas ferramentas por um administrador.
 
@@ -201,6 +224,7 @@ Mecanismos de segurança para garantir a estabilidade e o controle do sistema.
 ### 6.1. Templates de Geração
 
 O SkyHAL utiliza templates parametrizados para acelerar a criação de tipos comuns de ferramentas.
+
 - **Template de Integração de API**: ```apiIntegrationTemplate```.
 - **Template de Processamento de Dados**: ```dataProcessingTemplate```.
 
@@ -228,15 +252,15 @@ As configurações globais do SkyHAL controlam seu comportamento geral e o apeti
 
 ## 8. Roadmap Evolutivo
 
-### Fase 1: Evolução da Ferramenta:
+### Fase 1: Evolução da Ferramenta
 
 Implementar ferramentas que aprendem com o uso, se auto-otimizam e passam por testes A/B para encontrar a implementação mais eficiente.
 
-### Fase 2: Inteligência Colaborativa:
+### Fase 2: Inteligência Colaborativa
 
 Desenvolver ferramentas que podem se invocar mutuamente em uma cadeia de dependências (DAG), formando um ecossistema colaborativo e especializado.
 
-### Fase 3: Arquitetura Cognitiva:
+### Fase 3: Arquitetura Cognitiva
 
 Construir meta-ferramentas para gerenciar o próprio ecossistema, prever a necessidade de novas ferramentas e desenvolver capacidades de autorrecuperação (self-healing).
 A introdução de Tool Memory Embedding será crucial nesta fase para busca semântica e clusterização de capacidades.
@@ -284,4 +308,5 @@ Para instruções detalhadas, consulte [docs/devcontainer-setup.md](docs/devcont
 - Otimizações e melhores práticas
 
 #### Dúvidas ou problemas?
+
 Consulte nossa documentação detalhada ou abra uma issue descrevendo o problema encontrado.

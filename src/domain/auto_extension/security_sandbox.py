@@ -11,10 +11,21 @@ from typing import Any, Dict, Optional, Tuple
 
 import structlog
 from opentelemetry import trace
+from prometheus_client import Counter, Histogram
 
 # Configuração do logger
 logger = structlog.get_logger(__name__)
 tracer = trace.get_tracer(__name__)
+
+# Métricas Prometheus
+SANDBOX_EXECUTIONS = Counter(
+    "sandbox_executions_total", "Total de execuções de código na sandbox", ["status"]
+)
+SANDBOX_EXECUTION_DURATION = Histogram(
+    "sandbox_execution_duration_seconds",
+    "Duração da execução de código na sandbox (segundos)",
+    buckets=(0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10),
+)
 
 
 class SecuritySandbox:
@@ -48,6 +59,7 @@ class SecuritySandbox:
         }
 
         logger.info("sandbox_environment_created", sandbox_id=sandbox_id)
+        SANDBOX_EXECUTIONS.labels(status="created").inc()
         return sandbox_id
 
     async def execute_code(
@@ -69,6 +81,7 @@ class SecuritySandbox:
         result = {"status": "success", "output": "Código executado com sucesso"}
 
         logger.info("code_executed", result=result)
+        SANDBOX_EXECUTIONS.labels(status=result["status"]).inc()
         return result
 
     async def execute_safely(
@@ -89,7 +102,9 @@ class SecuritySandbox:
         Returns:
             Tuple contendo status de sucesso e resultado/erro
         """
-        with tracer.start_as_current_span("security_sandbox.execute_safely"):
+        with tracer.start_as_current_span(
+            "security_sandbox.execute_safely"
+        ) as span, SANDBOX_EXECUTION_DURATION.time():
             if params is None:
                 params = {}
 
@@ -110,6 +125,12 @@ class SecuritySandbox:
                         vulnerabilities=vulnerabilidades,
                         risk_score=scan_result.get("risk_score", 0),
                     )
+                    SANDBOX_EXECUTIONS.labels(status="unsafe").inc()
+                    if span:
+                        span.set_attribute("sandbox.status", "unsafe")
+                        span.set_attribute(
+                            "sandbox.vulnerabilities", str(vulnerabilidades)
+                        )
                     return False, {
                         "error": f"Código inseguro: {len(vulnerabilidades)} vulnerabilidades",
                         "vulnerabilities": vulnerabilidades,
@@ -144,6 +165,14 @@ class SecuritySandbox:
                             logger.warning(
                                 "resource_limits_exceeded", limits=limits_info
                             )
+                            SANDBOX_EXECUTIONS.labels(status="resource_exceeded").inc()
+                            if span:
+                                span.set_attribute(
+                                    "sandbox.status", "resource_exceeded"
+                                )
+                                span.set_attribute(
+                                    "sandbox.resource_violation", str(limits_info)
+                                )
                             return False, {
                                 "error": "Limites de recursos excedidos",
                                 "details": limits_info,
@@ -155,14 +184,27 @@ class SecuritySandbox:
                         output = {
                             "result": 8  # Valor esperado pelo teste para add(5,3)
                         }
+                        SANDBOX_EXECUTIONS.labels(status="success").inc()
+                        if span:
+                            span.set_attribute("sandbox.status", "success")
                         return True, output
                     else:
+                        SANDBOX_EXECUTIONS.labels(status="fail").inc()
+                        if span:
+                            span.set_attribute("sandbox.status", "fail")
                         return False, result
 
                 except asyncio.TimeoutError:
                     logger.warning("code_execution_timeout", timeout_ms=timeout_ms)
+                    SANDBOX_EXECUTIONS.labels(status="timeout").inc()
+                    if span:
+                        span.set_attribute("sandbox.status", "timeout")
                     return False, {"error": f"Tempo limite excedido: {timeout_ms}ms"}
 
             except Exception as e:
                 logger.error("sandbox_execution_error", error=str(e), exc_info=True)
+                SANDBOX_EXECUTIONS.labels(status="error").inc()
+                if span:
+                    span.set_attribute("sandbox.status", "error")
+                    span.record_exception(e)
                 return False, {"error": f"Erro de execução: {str(e)}"}

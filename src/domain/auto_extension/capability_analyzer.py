@@ -10,10 +10,25 @@ from typing import Any, Dict, List, Optional, Protocol
 
 import structlog
 from opentelemetry import trace
+from prometheus_client import Counter, Histogram
 
 # Configuração do logger
 logger = structlog.get_logger(__name__)
 tracer = trace.get_tracer(__name__)
+
+# Métricas Prometheus para análise de capacidades
+gaps_identified_total = Counter(
+    "auto_extension_gaps_identified_total",
+    "Total de lacunas de capacidade identificadas",
+    ["result"],
+)
+analysis_latency_seconds = Histogram(
+    "auto_extension_analysis_latency_seconds",
+    "Tempo de execução da análise de capacidades",
+)
+analysis_errors_total = Counter(
+    "auto_extension_analysis_errors_total", "Total de erros na análise de capacidades"
+)
 
 
 class MetricsProvider(Protocol):
@@ -207,6 +222,7 @@ class CapabilityAnalyzer:
         return prioritized
 
     @tracer.start_as_current_span("analyze_capabilities")
+    @analysis_latency_seconds.time()
     async def analyze_capabilities(self) -> List[CapabilityGap]:
         """Analisa capacidades atuais e identifica lacunas.
 
@@ -218,25 +234,40 @@ class CapabilityAnalyzer:
         """
         try:
             self.logger.info("iniciando_analise_capacidades")
+            with tracer.start_as_current_span(
+                "auto_extension.analyze_capabilities"
+            ) as span:
+                # Obtém métricas e feedback
+                metrics = await self.metrics_provider.get_performance_metrics()
+                feedback = await self.feedback_provider.get_recent_feedback()
 
-            # Obtém métricas e feedback
-            metrics = await self.metrics_provider.get_performance_metrics()
-            feedback = await self.feedback_provider.get_recent_feedback()
+                # Análise de métricas e feedback
+                gaps: List[CapabilityGap] = self._identify_gaps(metrics, feedback)
 
-            # Análise de métricas e feedback
-            gaps: List[CapabilityGap] = self._identify_gaps(metrics, feedback)
+                span.set_attribute("gaps_found", len(gaps))
+                span.set_attribute(
+                    "severity_avg",
+                    sum(gap.severity for gap in gaps) / len(gaps) if gaps else 0,
+                )
 
-            self.logger.info(
-                "analise_capacidades_concluida",
-                gaps_found=len(gaps),
-                severity_avg=(
-                    sum(gap.severity for gap in gaps) / len(gaps) if gaps else 0
-                ),
-            )
+                self.logger.info(
+                    "analise_capacidades_concluida",
+                    gaps_found=len(gaps),
+                    severity_avg=(
+                        sum(gap.severity for gap in gaps) / len(gaps) if gaps else 0
+                    ),
+                )
 
-            return gaps
+                gaps_identified_total.labels(result="success").inc()
+                return gaps
         except Exception as e:
+            analysis_errors_total.inc()
             self.logger.error("falha_analise_capacidades", exc_info=e)
+            with tracer.start_as_current_span(
+                "auto_extension.analyze_capabilities.error"
+            ) as span:
+                span.record_exception(e)
+            gaps_identified_total.labels(result="error").inc()
             raise
 
     def _identify_gaps(

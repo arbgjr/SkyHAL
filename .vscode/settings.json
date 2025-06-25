@@ -1,203 +1,202 @@
 {
-	"chat.promptFiles": true,
-	"chat.promptFilesLocations": {
-		".github/prompts": true
-	},
-	"github.copilot.chat.codeGeneration.useInstructionFiles": true,
-	"chat.instructionsFilesLocations": {
-		".github/instructions": true
-	},
-	"github.copilot.chat.commitMessageGeneration.instructions": [
-		{
-			"file": ".github/instructions/commit_message.instructions.md"
-		},
-		{
-			"file": ".github/instructions/copilot-specific.instructions.md"
-		},
-		{
-			"text": "Always use .NET 8.0, never try to change to another .NET version"
-		},
-		{
-			"text": "Always run tests with parameter '--logger \"console;verbosity=detailed\"'"
-		},
-		{
-			"text": "Always run dotnet commands with complement '|| true'"
-		}
-	],
-	"github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
-		{
-			"file": ".github/instructions/pull_request.instructions.md"
-		},
-		{
-			"file": ".github/instructions/done-ready.instructions.md"
-		}
-	],
-	"github.copilot.chat.codeGeneration.instructions": [
-		{
-			"file": ".github/instructions/global.instructions.md"
-		},
-		{
-			"file": ".github/instructions/copilot-specific.instructions.md"
-		},
-		{
-			"file": ".github/instructions/domain.instructions.md"
-		},
-		{
-			"file": ".github/instructions/memory-bank.instructions.md"
-		},
-		{
-			"text": "Sempre aplicar princípios SOLID e Clean Architecture"
-		},
-		{
-			"text": "Código deve ser testável, seguro e bem documentado"
-		},
-		{
-			"text": "Incluir tratamento de erros e validação adequados"
-		},
-		{
-			"text": "Registrar débitos técnicos e bugs encontrados nos arquivos apropriados"
-		},
-		{
-			"text": "Sempre consultar Memory Bank para contexto do projeto"
-		},
-		{
-			"text": "Atualizar Memory Bank quando explicitamente solicitado"
-		},
-		{
-			"text": "Manter consistência com padrões estabelecidos no systemPatterns.md"
-		}
-	],
-	"github.copilot.chat.reviewSelection.instructions": [
-		{
-			"file": ".github/instructions/code-review.instructions.md"
-		},
-		{
-			"file": ".github/instructions/copilot-specific.instructions.md"
-		},
-		{
-			"file": ".github/instructions/memory-bank.instructions.md"
-		},
-		{
-			"text": "Verificar aderência aos padrões SOLID e Clean Code"
-		},
-		{
-			"text": "Avaliar segurança, performance e manutenibilidade"
-		},
-		{
-			"text": "Verificar consistência com padrões do Memory Bank"
-		},
-		{
-			"text": "Identificar se mudanças impactam contexto do projeto"
-		}
-	],
-	"github.copilot.chat.testGeneration.instructions": [
-		{
-			"file": ".github/instructions/test.instructions.md"
-		},
-		{
-			"file": ".github/instructions/test-api.instructions.md"
-		},
-		{
-			"text": "Usar padrão AAA e nomenclatura descritiva"
-		},
-		{
-			"text": "Cobrir casos felizes, de erro e limite"
-		}
-	],
-	"chat.agent.enabled": true,
-	"chat.mcp.enabled": true,
-	"chat.mcp.configFile": "${workspaceFolder}/.vscode/mcp.json",
-	"chat.agent.maxRequests": 20,
-	"github.copilot.chat.agent.runTasks": true,
-	"github.copilot.chat.agent.autoFix": true,
-	"github.copilot.chat.editRequests.enabled": true,
-	"github.copilot.chat.agent.mode": "agentic",
-	"github.copilot.chat.models": {
-		"preferredModels": [
-			"claude-3.5-sonnet",
-			"gpt-4-turbo"
-		]
-	},
-	"github.copilot.chat.ignoreFiles": [
-		"**/.env*",
-		"**/secrets.*",
-		"**/credentials.*",
-    	"**/.git/**"
-	],
-	"github.copilot.chat.edits.temporalContext.enabled": true,
-	"github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": true,
-	"chat.implicitContext.enabled": {
-		"chatSelection": "always",
-		"editor": "always"
-	},
-	"github.copilot.chat.agent.thinkingTool": true,
-	"inlineChat.lineNaturalLanguageHint": true,
-	"chat.tools.autoApprove": false,
-	"github.copilot.chat.followUps": "always",
-	"github.copilot.chat.scopeSelection": true,
-	"chat.detectParticipant.enabled": true,
-	"github.copilot.chat.codesearch.enabled": true,
-	"github.copilot.chat.useProjectTemplates": true,
-	"github.copilot.chat.terminalChatLocation": "chatView",
-	"inlineChat.acceptedOrDiscardBeforeSave": "warn",
-	"chat.editing.confirmEditRequestRemoval": true,
-	"chat.editing.confirmEditRequestRetry": true,
-	"chat.editing.autoAcceptDelay": 15,
-	"inlineChat.finishOnType": true,
-	"inlineChat.holdToSpeech": true,
-	"inlineChat.lineEmptyHint": true,
-	"inlineChat.enableV2": true,
-	"accessibility.verbosity.inlineChat": true,
-	"accessibility.verbosity.panelChat": true,
-	"accessibility.signals.chatRequestSent": {
-		"sound": "on"
-	},
-	"accessibility.signals.chatResponseReceived": {
-		"sound": "on"
-	},
-	"github.copilot.enable": {
-		"*": true,
-		"scminput": false
-	},
-	"github.copilot.nextEditSuggestions.enabled": true,
-	"github.copilot.nextEditSuggestions.fixes": true,
-	"github.copilot.editor.enableCodeActions": true,
-	"github.copilot.renameSuggestions.triggerAutomatically": true,
-	"editor.inlineSuggest.edits.allowCodeShifting": "horizontal",
-	"editor.inlineSuggest.edits.renderSideBySide": "auto",
-	"editor.inlineSuggest.syntaxHighlightingEnabled": true,
-	"editor.inlineSuggest.edits.showCollapsed": true,
-	"editor.inlineSuggest.showToolbar": "always",
-	"github.copilot.chat.localeOverride": "pt-br",
-	"workbench.commandPalette.experimental.askChatLocation": "chatView",
-	"editor.formatOnSave": false,
-	"git.enableSmartCommit": true,
-	"git.autofetch": true,
-	"chat.sendElementsToChat.enabled": true,
-	"chat.sendElementsToChat.attachCSS": true,
-	"chat.sendElementsToChat.attachImages": true,
-	"chat.commandCenter.enabled": true,
-	"chat.edits2.enabled": true,
-	"github.copilot.chat.newWorkspaceCreation.enabled": true,
-	"github.copilot.chat.editor.temporalContext.enabled": true,
-	"chat.mcp.discovery.enabled": {
-		"claude-desktop": true,
-		"windsurf": true,
-		"cursor-global": true,
-		"cursor-workspace": true
-	},
-	"github.copilot.chat.agent.enabled": true,
-	"github.copilot.chat.enable": true,
-	"github.copilot.chat.search.semanticTextResults": true,
-	"chat.setupFromDialog": false,
-	"github.copilot.suggestSettings": true,
-	"github.copilot.chat.runCommand.enabled": true,
-	"workbench.startupEditor": "none",
-	"task.runOnFolderOpen": "Iniciar Servidores MCP",
-
-	"chat.modeFilesLocations": {
-		".github/chatmodes": true
-	},
-
-	"github.copilot.chat.welcomeMessage": "Olá! Bora programar?"
+  "chat.promptFiles": true,
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "file": ".github/instructions/commit_message.instructions.md"
+    },
+    {
+      "file": ".github/instructions/copilot-specific.instructions.md"
+    },
+    {
+      "text": "Always use .NET 8.0, never try to change to another .NET version"
+    },
+    {
+      "text": "Always run tests with parameter '--logger \"console;verbosity=detailed\"'"
+    },
+    {
+      "text": "Always run dotnet commands with complement '|| true'"
+    }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "file": ".github/instructions/pull_request.instructions.md"
+    },
+    {
+      "file": ".github/instructions/done-ready.instructions.md"
+    }
+  ],
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "file": ".github/instructions/global.instructions.md"
+    },
+    {
+      "file": ".github/instructions/copilot-specific.instructions.md"
+    },
+    {
+      "file": ".github/instructions/domain.instructions.md"
+    },
+    {
+      "file": ".github/instructions/memory-bank.instructions.md"
+    },
+    {
+      "text": "Sempre aplicar princípios SOLID e Clean Architecture"
+    },
+    {
+      "text": "Código deve ser testável, seguro e bem documentado"
+    },
+    {
+      "text": "Incluir tratamento de erros e validação adequados"
+    },
+    {
+      "text": "Registrar débitos técnicos e bugs encontrados nos arquivos apropriados"
+    },
+    {
+      "text": "Sempre consultar Memory Bank para contexto do projeto"
+    },
+    {
+      "text": "Atualizar Memory Bank quando explicitamente solicitado"
+    },
+    {
+      "text": "Manter consistência com padrões estabelecidos no systemPatterns.md"
+    }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    {
+      "file": ".github/instructions/code-review.instructions.md"
+    },
+    {
+      "file": ".github/instructions/copilot-specific.instructions.md"
+    },
+    {
+      "file": ".github/instructions/memory-bank.instructions.md"
+    },
+    {
+      "text": "Verificar aderência aos padrões SOLID e Clean Code"
+    },
+    {
+      "text": "Avaliar segurança, performance e manutenibilidade"
+    },
+    {
+      "text": "Verificar consistência com padrões do Memory Bank"
+    },
+    {
+      "text": "Identificar se mudanças impactam contexto do projeto"
+    }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    {
+      "file": ".github/instructions/test.instructions.md"
+    },
+    {
+      "file": ".github/instructions/test-api.instructions.md"
+    },
+    {
+      "text": "Usar padrão AAA e nomenclatura descritiva"
+    },
+    {
+      "text": "Cobrir casos felizes, de erro e limite"
+    }
+  ],
+  "chat.agent.enabled": true,
+  "chat.mcp.enabled": true,
+  "chat.mcp.configFile": "${workspaceFolder}/.vscode/mcp.json",
+  "chat.agent.maxRequests": 20,
+  "github.copilot.chat.agent.runTasks": true,
+  "github.copilot.chat.agent.autoFix": true,
+  "github.copilot.chat.editRequests.enabled": true,
+  "github.copilot.chat.agent.mode": "agentic",
+  "github.copilot.chat.models": {
+    "preferredModels": [
+      "claude-3.5-sonnet",
+      "gpt-4-turbo"
+    ]
+  },
+  "github.copilot.chat.ignoreFiles": [
+    "**/.env*",
+    "**/secrets.*",
+    "**/credentials.*",
+    "**/.git/**"
+  ],
+  "github.copilot.chat.edits.temporalContext.enabled": true,
+  "github.copilot.chat.edits.suggestRelatedFilesFromGitHistory": true,
+  "chat.implicitContext.enabled": {
+    "chatSelection": "always",
+    "editor": "always"
+  },
+  "github.copilot.chat.agent.thinkingTool": true,
+  "inlineChat.lineNaturalLanguageHint": true,
+  "chat.tools.autoApprove": false,
+  "github.copilot.chat.followUps": "always",
+  "github.copilot.chat.scopeSelection": true,
+  "chat.detectParticipant.enabled": true,
+  "github.copilot.chat.codesearch.enabled": true,
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.chat.terminalChatLocation": "chatView",
+  "inlineChat.acceptedOrDiscardBeforeSave": "warn",
+  "chat.editing.confirmEditRequestRemoval": true,
+  "chat.editing.confirmEditRequestRetry": true,
+  "chat.editing.autoAcceptDelay": 15,
+  "inlineChat.finishOnType": true,
+  "inlineChat.holdToSpeech": true,
+  "inlineChat.lineEmptyHint": true,
+  "inlineChat.enableV2": true,
+  "accessibility.verbosity.inlineChat": true,
+  "accessibility.verbosity.panelChat": true,
+  "accessibility.signals.chatRequestSent": {
+    "sound": "on"
+  },
+  "accessibility.signals.chatResponseReceived": {
+    "sound": "on"
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "scminput": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.nextEditSuggestions.fixes": true,
+  "github.copilot.editor.enableCodeActions": true,
+  "github.copilot.renameSuggestions.triggerAutomatically": true,
+  "editor.inlineSuggest.edits.allowCodeShifting": "horizontal",
+  "editor.inlineSuggest.edits.renderSideBySide": "auto",
+  "editor.inlineSuggest.syntaxHighlightingEnabled": true,
+  "editor.inlineSuggest.edits.showCollapsed": true,
+  "editor.inlineSuggest.showToolbar": "always",
+  "github.copilot.chat.localeOverride": "pt-br",
+  "workbench.commandPalette.experimental.askChatLocation": "chatView",
+  "editor.formatOnSave": true,
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "chat.sendElementsToChat.enabled": true,
+  "chat.sendElementsToChat.attachCSS": true,
+  "chat.sendElementsToChat.attachImages": true,
+  "chat.commandCenter.enabled": true,
+  "chat.edits2.enabled": true,
+  "github.copilot.chat.newWorkspaceCreation.enabled": true,
+  "github.copilot.chat.editor.temporalContext.enabled": true,
+  "chat.mcp.discovery.enabled": {
+    "claude-desktop": true,
+    "windsurf": true,
+    "cursor-global": true,
+    "cursor-workspace": true
+  },
+  "github.copilot.chat.agent.enabled": true,
+  "github.copilot.chat.enable": true,
+  "github.copilot.chat.search.semanticTextResults": true,
+  "chat.setupFromDialog": false,
+  "github.copilot.suggestSettings": true,
+  "github.copilot.chat.runCommand.enabled": true,
+  "workbench.startupEditor": "none",
+  "task.runOnFolderOpen": "Iniciar Servidores MCP",
+  "chat.modeFilesLocations": {
+    ".github/chatmodes": true
+  },
+  "git.confirmSync": false,
+  "github.copilot.chat.welcomeMessage": "Olá! Bora programar?"
 }

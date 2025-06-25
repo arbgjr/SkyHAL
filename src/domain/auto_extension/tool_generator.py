@@ -11,10 +11,23 @@ from typing import Any, Dict
 
 import structlog
 from opentelemetry import trace
+from prometheus_client import Counter, Histogram
 
 # Configuração do logger
 logger = structlog.get_logger(__name__)
 tracer = trace.get_tracer(__name__)
+
+# Métricas Prometheus para geração de tools
+tools_generated_total = Counter(
+    "auto_extension_tools_generated_total", "Total de ferramentas geradas", ["status"]
+)
+tool_generation_latency_seconds = Histogram(
+    "auto_extension_tool_generation_latency_seconds", "Tempo de geração de ferramentas"
+)
+tool_generation_errors_total = Counter(
+    "auto_extension_tool_generation_errors_total",
+    "Total de erros na geração de ferramentas",
+)
 
 
 @dataclass
@@ -78,6 +91,7 @@ class ToolGenerator:
         self.security_validator = security_validator
         self.logger = logger.bind(component="ToolGenerator")
 
+    @tool_generation_latency_seconds.time()
     @tracer.start_as_current_span("generate_tool")
     async def generate_tool(self, spec: ToolSpec) -> GeneratedTool:
         """Gera uma nova tool baseada na especificação.
@@ -138,15 +152,17 @@ class ToolGenerator:
                 status=status,
                 validation_score=validation_results.get("score", 0),
             )
-
+            tools_generated_total.labels(status=status).inc()
             return tool
         except ValueError as e:
             self.logger.warning(
                 "especificacao_invalida", spec_name=spec.name, error=str(e)
             )
+            tool_generation_errors_total.inc()
             raise
         except Exception as e:
             self.logger.error("falha_geracao_tool", spec_name=spec.name, exc_info=e)
+            tool_generation_errors_total.inc()
             raise
 
     def _validate_spec(self, spec: ToolSpec) -> None:

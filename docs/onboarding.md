@@ -20,6 +20,7 @@ O ambiente de desenvolvimento do SkyHAL agora utiliza scripts dinâmicos para ga
 
 - Execute os scripts manualmente ou utilize os hooks/tarefas automatizadas do projeto.
 - Exemplo:
+
   ```powershell
   pwsh .scripts/post-checkout-setup.ps1
   pwsh .scripts/install-mcp-packages.ps1
@@ -31,12 +32,12 @@ O ambiente de desenvolvimento do SkyHAL agora utiliza scripts dinâmicos para ga
 - Consulte o Memory Bank antes de iniciar tarefas relevantes.
 - Em caso de erro, consulte os logs exibidos pelo script para diagnóstico.
 
-### 5. Referências
+### 5. Observabilidade Avançada
 
-- `.vscode/extensions.json`: Lista de extensões recomendadas
-- `.vscode/mcp.json`: Configuração dos servidores MCP
-- `.github/instructions/`: Padrões e diretrizes do projeto
-- `memory-bank/`: Contexto e histórico do projeto
+- Todos os componentes core do sistema de auto-extensão estão instrumentados com métricas Prometheus, tracing OpenTelemetry e logs estruturados.
+- Build, lint e testes automatizados validados.
+- Artefato de validação: [`docs/especificacoes-tecnicas/artefatos/observability-validation-20250625.md`](../docs/especificacoes-tecnicas/artefatos/observability-validation-20250625.md)
+- Consulte o [README principal](../README.md#5-observabilidade-avancada-e-monitoramento) e a [documentação de observabilidade](../docs/observabilidade/README.md) para exemplos e troubleshooting.
 
 ---
 
