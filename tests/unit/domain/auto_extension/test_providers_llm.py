@@ -11,7 +11,7 @@ from src.domain.auto_extension.providers import (
 
 
 class DummyTemplateManager:
-    async def get_template(self, template_id):
+    async def get_template(self, template_id=None, **kwargs):
         return {"code_template": "def foo(x):\n    return x + 1"}
 
 

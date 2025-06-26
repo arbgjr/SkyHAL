@@ -84,7 +84,7 @@ def demo_fastapi_integration() -> None:
     # )
 
     @app.get("/demo")
-    async def demo_endpoint():  # type: ignore
+    async def demo_endpoint():
         """Endpoint de demonstração."""
         logger = logging_provider.get_logger("demo.endpoint")
         logger.info("Processando requisição de demo")

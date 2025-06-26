@@ -37,7 +37,10 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-memory"
-      ]
+      ],
+      "env": {
+        "MEMORY_FILE_PATH": "./workspace-memory/memory.json"
+      }
     },
     "sequentialthinking": {
       "command": "npx",
@@ -59,20 +62,6 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-everything"
-      ]
-    },
-    "metamcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@metatool-ai/metatool-app"
-      ]
-    },
-    "intruder": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@intruder-io/intruder-mcp"
       ]
     }
   }

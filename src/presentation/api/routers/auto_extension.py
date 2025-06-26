@@ -354,13 +354,15 @@ async def create_tool(
                     status_code=401, detail="Token inválido ou expirado"
                 ) from None
 
-            # Criar especificação da ferramenta
+            # Garantir valor default para parameters
+            parameters_value = tool_request.parameters
+
             spec = ToolSpec(
                 name=tool_request.name,
                 description=tool_request.description,
-                parameters=[tool_request.parameters]
-                if isinstance(tool_request.parameters, dict)
-                else tool_request.parameters,
+                parameters=[parameters_value]
+                if isinstance(parameters_value, dict)
+                else parameters_value,
                 return_type=tool_request.return_type,
                 template_id=tool_request.template_id or "default",
                 security_level=tool_request.security_level,
@@ -372,6 +374,9 @@ async def create_tool(
                 {
                     "openai": {"code": "# Prompt padrão OpenAI para código"},
                     "template": {"code": "# Prompt padrão template"},
+                    "python_func": {
+                        "code": 'def {name}({params}):\n    """{description}\n\n    Gerado automaticamente pelo SkyHAL.\n    """\n    # TODO: implementar lógica\n    pass\n'
+                    },
                 }
             )
 
@@ -506,7 +511,11 @@ async def create_tool(
                 validation_results=validation_results,
             )
         except Exception as e:
-            logger.error("erro_criar_ferramenta", error=str(e))
+            from fastapi import HTTPException as FastAPIHTTPException
+
+            if isinstance(e, FastAPIHTTPException):
+                raise e
+            logger.error("erro_criar_ferramenta", error=str(e), exc_info=True)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Erro ao criar ferramenta",

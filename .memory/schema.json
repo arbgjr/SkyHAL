@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Project": [
+      "name",
+      "status",
+      "technologies",
+      "team"
+    ],
+    "Person": [
+      "name",
+      "role",
+      "expertise",
+      "preferences"
+    ],
+    "Technology": [
+      "name",
+      "version",
+      "compatibility",
+      "limitations"
+    ],
+    "Problem": [
+      "description",
+      "context",
+      "solution",
+      "lessons"
+    ],
+    "Experiment": [
+      "hypothesis",
+      "method",
+      "result",
+      "insights"
+    ]
+  },
+  "relations": [
+    "works_on",
+    "uses_technology",
+    "depends_on",
+    "similar_to",
+    "solves_problem",
+    "improves_upon",
+    "conflicts_with",
+    "enables"
+  ]
+}

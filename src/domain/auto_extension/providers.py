@@ -42,22 +42,21 @@ class TemplateCodeProvider:
 
     async def generate(self, spec: ToolSpec, prompt: Optional[str] = None) -> str:
         try:
-            # Suporta tanto método síncrono quanto assíncrono
-            get_template = getattr(self.template_manager, "get_template", None)
-            if get_template is None:
-                raise ProviderError(
-                    "PromptTemplateManager não possui método get_template"
-                )
-            import inspect
-
-            if inspect.iscoroutinefunction(get_template):
-                template = await get_template(spec.template_id)
+            # Busca template dinâmico por ID
+            template_coro = self.template_manager.get_template(
+                template_id=getattr(spec, "template_id", None),
+                provider="template",
+                tipo="code",
+            )
+            # Suporte a managers síncronos e assíncronos
+            if hasattr(template_coro, "__await__"):
+                template = await template_coro
             else:
-                template = get_template(spec.template_id)
-            self.logger.info("template_obtido", template_id=spec.template_id)
-            # Simples substituição, pode ser expandido
+                template = template_coro
+            self.logger.info(
+                "template_obtido", template_id=getattr(spec, "template_id", None)
+            )
             params: Any = spec.parameters or {}
-            # Se for lista de dicts, mescla tudo em um só dict
             if isinstance(params, list):
                 merged: Dict[str, Any] = {}
                 for d in params:
@@ -67,11 +66,30 @@ class TemplateCodeProvider:
                 params = merged
             elif not isinstance(params, dict):
                 params = dict(params)
-            # Garante que todas as chaves são str
             params = {str(k): v for k, v in params.items()}
+            # Adiciona campos obrigatórios para template
+            params.setdefault("name", spec.name)
+            params.setdefault("description", spec.description)
+            # Monta lista de parâmetros para função Python
+            param_list = ", ".join(
+                f"{k}" for k in params if k not in ("name", "description")
+            )
             code = template.get(
-                "code_template", "# Código gerado por template não definido"
-            ).format(**params)
+                "code",
+                template.get(
+                    "code_template", "# Código gerado por template não definido"
+                ),
+            )
+            # Remove name/description de params se já estão sendo passados explicitamente
+            params_fmt = dict(params)
+            params_fmt.pop("name", None)
+            params_fmt.pop("description", None)
+            code = code.format(
+                name=spec.name,
+                description=spec.description,
+                params=param_list,
+                **params_fmt,
+            )
             if not code:
                 code = "# Código gerado por template não definido"
             self.logger.info("codigo_gerado", tool=spec.name)
