@@ -389,3 +389,49 @@ Para instruções detalhadas, consulte [docs/devcontainer-setup.md](docs/devcont
 #### Dúvidas ou problemas?
 
 Consulte nossa documentação detalhada ou abra uma issue descrevendo o problema encontrado.
+
+## 4. Exemplo de Uso: Geração de Ferramenta via LLM/Template
+
+### Requisição para o endpoint `/auto-extension/tools`
+
+```json
+POST /auto-extension/tools
+Authorization: Bearer <token_jwt>
+Content-Type: application/json
+
+{
+  "name": "social_media_connector",
+  "description": "Conecta com APIs de redes sociais",
+  "parameters": {
+    "platform": {"type": "string", "enum": ["twitter", "facebook"]},
+    "action": {"type": "string", "enum": ["post", "get"]},
+    "data": {"type": "object"}
+  },
+  "return_type": "object",
+  "template_id": "api_connector",
+  "security_level": "standard",
+  "resource_requirements": {"memory_mb": 128, "timeout_seconds": 10},
+  "provider": "llm", // ou "template" ou "hybrid"
+  "llm_config": {
+    "url": "https://api.openai.com/v1/chat/completions",
+    "model": "gpt-4o"
+  }
+}
+```
+
+### Resposta de sucesso
+
+```json
+{
+  "tool_id": "test-123",
+  "name": "social_media_connector",
+  "status": "active",
+  "version": "1.0.0",
+  "created_at": "2025-06-26T00:00:00Z",
+  "description": "Conecta com APIs de redes sociais",
+  "code": "def social_media_connector(platform, action, data):\n    pass",
+  "validation_results": {"passed": true, "score": 0.95, "issues_count": 0}
+}
+```
+
+> Para exemplos completos de payloads, fallback, critérios de segurança e integração, consulte `docs/especificacoes-tecnicas/llm-auto-extensao.md`.
