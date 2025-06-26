@@ -4,18 +4,16 @@ Este módulo implementa as APIs para gerenciar ferramentas e capacidades
 de autoextensão do sistema.
 """
 
+
 import uuid
 from datetime import datetime
 from typing import Annotated, Any, Dict, List, Optional
-from unittest.mock import AsyncMock
 
 import structlog
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from opentelemetry import trace
 from pydantic import BaseModel, Field
 
-# TODO: Implementar factory de observabilidade
-# from src.infrastructure.observability.factory import get_tracer, get_logger
 from src.domain.auto_extension.capability_analyzer import (
     CapabilityAnalyzer,
     FeedbackProvider,
@@ -25,7 +23,15 @@ from src.domain.auto_extension.self_learning import SelfLearningSystem
 from src.domain.auto_extension.tool_generator import ToolGenerator, ToolSpec
 from src.domain.auto_extension.tool_validator import ToolValidator
 
-# Criar o router para a auto extensão
+router = APIRouter(
+    prefix="/auto-extension",
+    tags=["auto-extension"],
+    responses={404: {"description": "Não encontrado"}},
+)
+
+# Logger e tracer globais
+logger = structlog.get_logger(__name__)
+tracer = trace.get_tracer(__name__)
 router = APIRouter(
     prefix="/auto-extension",
     tags=["auto-extension"],
@@ -305,8 +311,9 @@ async def create_tool(
             )
 
             # Detectar mocks
-            is_generator_mock = isinstance(generator, AsyncMock)
-            is_validator_mock = isinstance(validator, AsyncMock)
+            # Removido AsyncMock: não deve ser usado em produção
+            is_generator_mock = False
+            is_validator_mock = False
 
             if is_generator_mock:
                 mock_result = await generator.generate_tool(spec)

@@ -153,98 +153,12 @@ class ToolValidator:
                         "falha_destruir_sandbox", tool_id=tool.tool_id, error=str(e)
                     )
 
+    # Função utilitária centralizada em src/utils/tool_validation.py
+    # Substitui a lógica duplicada anterior.
     def _analyze_results(
         self, security_results: Dict[str, Any], test_results: Dict[str, Any]
     ) -> tuple:
-        """Analisa os resultados de segurança e testes.
+        """Analisa os resultados de segurança e testes usando utilitário centralizado."""
+        from src.utils.tool_validation import analyze_tool_results
 
-        Args:
-            security_results: Resultados da análise de segurança
-            test_results: Resultados dos testes de funcionalidade
-
-        Returns:
-            Uma tupla contendo (resultado, problemas, recomendações)
-        """
-        issues = []
-        recommendations = []
-
-        # Verificar problemas de segurança
-        security_score = security_results.get("score", 0.0)
-        security_issues = security_results.get("issues", [])
-
-        if security_score < 0.7:
-            # Falha por segurança insuficiente
-            result = ValidationResult.FAILED_SECURITY
-            issues.extend(security_issues)
-
-            for issue in security_issues:
-                if issue.get("severity", "") == "high":
-                    recommendations.append(
-                        f"Corrigir vulnerabilidade crítica: {issue.get('description', '')}"
-                    )
-
-        # Verificar problemas funcionais
-        elif not test_results.get("all_passed", False):
-            # Falha por funcionalidade incorreta
-            result = ValidationResult.FAILED_FUNCTIONALITY
-
-            # Adicionar testes que falharam
-            failed_tests = test_results.get("failed_tests", [])
-            for test in failed_tests:
-                issues.append(
-                    {
-                        "type": "test_failure",
-                        "test_name": test.get("name", "unknown"),
-                        "description": test.get("message", "Teste falhou"),
-                        "severity": "medium",
-                    }
-                )
-
-                recommendations.append(
-                    f"Corrigir falha no teste '{test.get('name', 'unknown')}': "
-                    f"{test.get('message', 'Sem detalhes')}"
-                )
-
-        # Verificar problemas de desempenho
-        elif test_results.get("performance_score", 1.0) < 0.5:
-            # Falha por desempenho insuficiente
-            result = ValidationResult.FAILED_PERFORMANCE
-
-            # Adicionar problemas de desempenho
-            performance_issues = test_results.get("performance_issues", [])
-            issues.extend(performance_issues)
-
-            for issue in performance_issues:
-                recommendations.append(
-                    f"Melhorar desempenho: {issue.get('description', '')}"
-                )
-
-        # Verificar problemas de compatibilidade
-        elif not test_results.get("compatibility_passed", True):
-            # Falha por problemas de compatibilidade
-            result = ValidationResult.FAILED_COMPATIBILITY
-
-            # Adicionar problemas de compatibilidade
-            compat_issues = test_results.get("compatibility_issues", [])
-            issues.extend(compat_issues)
-
-            for issue in compat_issues:
-                recommendations.append(
-                    f"Resolver problema de compatibilidade: "
-                    f"{issue.get('description', '')}"
-                )
-
-        # Se passou em todas as verificações
-        else:
-            result = ValidationResult.PASSED
-
-            # Adicionar recomendações gerais para melhoria
-            if security_score < 0.9:
-                recommendations.append(
-                    "Considerar melhorias de segurança para pontuação mais alta"
-                )
-
-            if test_results.get("performance_score", 1.0) < 0.8:
-                recommendations.append("Avaliar otimizações de desempenho")
-
-        return result, issues, recommendations
+        return analyze_tool_results(security_results, test_results)

@@ -5,11 +5,12 @@ Este módulo fornece um factory para configurar e integrar todos os
 componentes de observabilidade (logging, métricas, tracing).
 """
 
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import yaml
+
+from src.utils.secrets import SecretsManager
 
 from .providers.logging_provider import StructuredLoggingProvider
 from .providers.metrics_provider import MetricsProvider
@@ -48,7 +49,7 @@ class ObservabilityFactory:
             Configuração carregada e mesclada.
         """
         # Determinar ambiente
-        env = environment or os.getenv("ENVIRONMENT", "development")
+        env = environment or SecretsManager.get_secret("ENVIRONMENT", "development")
 
         # Carregar configuração base
         base_config = self._load_config_file(self.config_path)
