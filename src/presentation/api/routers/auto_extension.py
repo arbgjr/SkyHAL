@@ -10,17 +10,44 @@ from datetime import datetime
 from typing import Annotated, Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    Security,
+    status,
+)
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 from opentelemetry import trace
 from pydantic import BaseModel, Field
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from src.domain.auto_extension.capability_analyzer import (
     CapabilityAnalyzer,
     FeedbackProvider,
     MetricsProvider,
 )
+from src.domain.auto_extension.entities import ToolSpec
+from src.domain.auto_extension.prompt_template_manager import PromptTemplateManager
+from src.domain.auto_extension.providers import (
+    CodeGenerationProvider,
+    HybridCodeProvider,
+    LLMCodeProvider,
+    ProviderError,
+    TemplateCodeProvider,
+)
 from src.domain.auto_extension.self_learning import SelfLearningSystem
-from src.domain.auto_extension.tool_generator import ToolGenerator, ToolSpec
+from src.domain.auto_extension.tool_generator import (
+    ToolGenerator,
+)
+from src.domain.auto_extension.tool_generator import (
+    ToolSpec as ToolGenSpec,
+)
 from src.domain.auto_extension.tool_validator import ToolValidator
 
 router = APIRouter(
@@ -29,9 +56,13 @@ router = APIRouter(
     responses={404: {"description": "Não encontrado"}},
 )
 
-# Logger e tracer globais
+
+# Logger, tracer e rate limiter globais
 logger = structlog.get_logger(__name__)
 tracer = trace.get_tracer(__name__)
+limiter = Limiter(key_func=get_remote_address)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 router = APIRouter(
     prefix="/auto-extension",
     tags=["auto-extension"],
@@ -63,6 +94,16 @@ class ToolRequest(BaseModel):
     )
     resource_requirements: Dict[str, Any] = Field(
         default={}, description="Requisitos de recursos para execução"
+    )
+    # Novos campos para suporte a LLM/config dinâmica
+    provider: Optional[str] = Field(
+        default=None, description="Provider de geração: 'llm', 'template' ou 'hybrid'"
+    )
+    llm_config: Optional[Dict[str, Any]] = Field(
+        default=None, description="Configuração do LLM (url, api_key, model, etc.)"
+    )
+    prompt_customizado: Optional[str] = Field(
+        default=None, description="Prompt customizado para geração de código"
     )
 
 
@@ -291,95 +332,168 @@ async def list_capability_gaps(
     response_model=ToolResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit("5/minute")
 async def create_tool(
     tool_request: ToolRequest,
-    generator: Annotated[ToolGenerator, Depends(get_tool_generator)],
+    request: Request,
     validator: Annotated[ToolValidator, Depends(get_tool_validator)],
+    token: str = Security(oauth2_scheme),
 ) -> ToolResponse:
-    """Cria uma nova ferramenta baseada em especificações."""
+    """Cria uma nova ferramenta baseada em especificação, com suporte a LLM/template/híbrido, validação/sanitização, rate limiting e logging seguro."""
     with tracer.start_as_current_span("create_tool"):
         try:
+            # Autenticação JWT básica (exemplo, pode ser expandido)
+            try:
+                payload = jwt.decode(token, "SECRET", algorithms=["HS256"])
+                user_id = payload.get("sub")
+            except JWTError:
+                logger.warning(
+                    "jwt_invalido", user_token=token[:8] + "...", action="create_tool"
+                )
+                raise HTTPException(
+                    status_code=401, detail="Token inválido ou expirado"
+                ) from None
+
             # Criar especificação da ferramenta
             spec = ToolSpec(
                 name=tool_request.name,
                 description=tool_request.description,
-                parameters=tool_request.parameters,
+                parameters=[tool_request.parameters]
+                if isinstance(tool_request.parameters, dict)
+                else tool_request.parameters,
                 return_type=tool_request.return_type,
                 template_id=tool_request.template_id or "default",
                 security_level=tool_request.security_level,
                 resource_requirements=tool_request.resource_requirements,
             )
 
-            # Detectar mocks
-            # Removido AsyncMock: não deve ser usado em produção
-            is_generator_mock = False
-            is_validator_mock = False
-
-            if is_generator_mock:
-                mock_result = await generator.generate_tool(spec)
-                if isinstance(mock_result, dict):
-                    # Garantir dicionário válido
-                    if "validation_results" not in mock_result or not isinstance(
-                        mock_result["validation_results"], dict
-                    ):
-                        mock_result["validation_results"] = {
-                            "passed": True,
-                            "score": 0.95,
-                        }
-                    # Sempre criar uma cópia antes de sobrescrever
-                    validation_results = dict(mock_result["validation_results"])
-                    if is_validator_mock:
-                        validation_results["passed"] = True
-                    # Força sempre antes de retornar
-                    validation_results = dict(validation_results)
-                    validation_results["passed"] = True
-                    return ToolResponse(
-                        tool_id=mock_result.get("tool_id", str(uuid.uuid4())),
-                        name=mock_result.get("name", tool_request.name),
-                        status=mock_result.get("status", "active"),
-                        version=mock_result.get("version", "1.0.0"),
-                        created_at=mock_result.get(
-                            "created_at", datetime.now().isoformat()
-                        ),
-                        description=mock_result.get("spec", {}).get(
-                            "description", tool_request.description
-                        ),
-                        code=mock_result.get("code", "# Código da ferramenta gerada"),
-                        validation_results=validation_results,
-                    )
-
-            tool = await generator.generate_tool(spec)
-            validation = await validator.validate_tool(tool)
-
-            if is_validator_mock:
-                validation_results = {
-                    "passed": True,
-                    "score": 0.95,
-                    "issues_count": 0,
+            # Inicializar PromptTemplateManager (poderia ser singleton/global)
+            prompt_manager = PromptTemplateManager(
+                {
+                    "openai": {"code": "# Prompt padrão OpenAI para código"},
+                    "template": {"code": "# Prompt padrão template"},
                 }
+            )
+
+            # Seleção dinâmica de provider
+            provider_type = (tool_request.provider or "template").lower()
+            prompt = tool_request.prompt_customizado or prompt_manager.get_prompt(
+                provider_type
+                if provider_type in prompt_manager.list_providers()
+                else "template",
+                "code",
+            )
+
+            # Instanciar provider conforme config
+            code_provider: CodeGenerationProvider
+            if provider_type == "llm":
+                llm_config = tool_request.llm_config or {
+                    "url": "https://api.openai.com/v1/chat/completions",
+                    "model": "gpt-4o",
+                }
+                code_provider = LLMCodeProvider(llm_config)
+            elif provider_type == "hybrid":
+                llm_config = tool_request.llm_config or {
+                    "url": "https://api.openai.com/v1/chat/completions",
+                    "model": "gpt-4o",
+                }
+                code_provider = HybridCodeProvider(
+                    LLMCodeProvider(llm_config),
+                    TemplateCodeProvider(prompt_manager),
+                    mode="hybrid",
+                )
             else:
-                if isinstance(validation, dict):
-                    passed_value = validation.get("passed", True)
-                    score_value = validation.get("score", 0.95)
-                    issues_value = len(validation.get("issues", []))
-                else:
-                    passed_value = (
-                        getattr(validation, "result", None)
-                        and getattr(validation.result, "value", None) == "passed"
+                code_provider = TemplateCodeProvider(prompt_manager)
+
+            # Geração do código
+            try:
+                code = await code_provider.generate(spec, prompt)
+            except ProviderError as e:
+                logger.warning(
+                    "fallback_template_provider",
+                    error=str(e),
+                    user_id=user_id,
+                    provider=provider_type,
+                )
+                code = await TemplateCodeProvider(prompt_manager).generate(spec, prompt)
+
+            # Validação/sanitização da resposta LLM
+            if provider_type in ("llm", "hybrid"):
+                if (
+                    not isinstance(code, str)
+                    or len(code) > 10000
+                    or "import os" in code.lower()
+                ):
+                    logger.error(
+                        "codigo_llm_inseguro", user_id=user_id, provider=provider_type
                     )
-                    score_value = getattr(validation, "security_score", 0.95)
-                    issues_value = len(getattr(validation, "issues", []))
-                validation_results = {
-                    "passed": passed_value,
-                    "score": score_value,
-                    "issues_count": issues_value,
-                }
-            # Sempre criar uma cópia antes de sobrescrever
-            # Força sempre antes de retornar
-            validation_results = dict(validation_results)
-            if is_generator_mock or is_validator_mock:
-                validation_results["passed"] = True
-            validation_results["passed"] = True
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Código gerado pelo LLM não passou na validação de segurança.",
+                    )
+
+            from src.domain.auto_extension.tool_generator import GeneratedTool
+
+            if isinstance(spec.parameters, list):
+                if len(spec.parameters) > 0 and isinstance(spec.parameters[0], dict):
+                    parameters = spec.parameters[0]
+                else:
+                    parameters = {}
+
+            tg_spec = ToolGenSpec(
+                name=spec.name,
+                description=spec.description,
+                parameters=parameters,
+                return_type=spec.return_type or "object",
+                template_id=spec.template_id or "default",
+                security_level=spec.security_level or "standard",
+                resource_requirements=spec.resource_requirements or {},
+            )
+
+            tool = GeneratedTool(
+                tool_id=str(uuid.uuid4()),
+                name=spec.name,
+                code=code,
+                spec=tg_spec,
+                validation_results={},  # Preencher após validação
+                version="1.0.0",
+                created_at=datetime.utcnow().isoformat(),
+            )
+
+            # Validação de segurança (mock ou real)
+            validation = await validator.validate_tool(tool)
+            if isinstance(validation, dict):
+                passed_value = validation.get("passed", True)
+                score_value = validation.get("score", 0.95)
+                issues_value = len(validation.get("issues", []))
+            else:
+                passed_value = (
+                    getattr(validation, "result", None)
+                    and getattr(validation.result, "value", None) == "passed"
+                )
+                score_value = getattr(validation, "security_score", 0.95)
+                issues_value = len(getattr(validation, "issues", []))
+            validation_results = {
+                "passed": passed_value,
+                "score": score_value,
+                "issues_count": issues_value,
+            }
+            # Atualizar o campo de validação do tool
+            tool.validation_results = validation_results
+
+            # Logging seguro e estruturado
+            logger.info(
+                "tool_criada",
+                user_id=user_id,
+                provider=provider_type,
+                tool_name=tool.name,
+                tool_id=tool.tool_id,
+                validation=validation_results,
+                status="success" if passed_value else "failed",
+            )
+
+            # Métricas customizadas (exemplo)
+            # Aqui pode-se incrementar contadores Prometheus, etc.
 
             return ToolResponse(
                 tool_id=tool.tool_id,

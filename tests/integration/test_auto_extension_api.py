@@ -126,6 +126,9 @@ class TestAutoExtensionAPI:
             "src.presentation.api.routers.auto_extension.get_tool_validator",
             return_value=mock_validator,
         ):
+            from tests.integration.jwt_test_utils import generate_test_jwt
+
+            token = generate_test_jwt()
             tool_spec = {
                 "name": "social_media_connector",
                 "description": "Conecta com APIs de redes sociais",
@@ -139,7 +142,11 @@ class TestAutoExtensionAPI:
                 "security_level": "standard",
                 "resource_requirements": {"memory_mb": 128, "timeout_seconds": 10},
             }
-            response = client.post("/auto-extension/tools", json=tool_spec)
+            response = client.post(
+                "/auto-extension/tools",
+                json=tool_spec,
+                headers={"Authorization": f"Bearer {token}"},
+            )
 
         assert response.status_code == 201
         data = response.json()
