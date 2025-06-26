@@ -435,3 +435,46 @@ Content-Type: application/json
 ```
 
 > Para exemplos completos de payloads, fallback, critérios de segurança e integração, consulte `docs/especificacoes-tecnicas/llm-auto-extensao.md`.
+
+---
+
+## Exemplo: Geração de Código via LLM (API REST)
+
+### Requisição
+
+```bash
+curl -X POST http://localhost:8000/llm-codegen/generate \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Crie uma função Python que soma dois números"}'
+```
+
+### Resposta esperada
+
+```json
+{
+  "code": "def soma(a, b):\n    return a + b",
+  "validation_results": {"passed": true, "score": 0.95, "issues_count": 0},
+  "trace_id": "e1f2a3b4c5d6e7f8",
+  "metrics": {
+    "latency_seconds": 0.42,
+    "quota_remaining": 97
+  }
+}
+```
+
+### Observabilidade
+
+- Todas as requisições são rastreadas via OpenTelemetry (trace_id incluso na resposta)
+- Métricas Prometheus: `llm_codegen_requests_total`, `llm_codegen_latency_seconds`
+- Logs estruturados (structlog) com contexto de usuário, prompt e status
+
+### Limitações e Segurança
+
+- Limite de 3 requisições por minuto por usuário
+- Código gerado é sanitizado para evitar comandos perigosos (ex: `os`, `sys`, `exec`, `eval`, `subprocess`, `open`)
+- Prompts muito curtos retornam 400
+- Erros de autenticação retornam 401
+- Respostas inseguras ou inválidas são bloqueadas
+
+> Para detalhes avançados, fallback, critérios de segurança e integração, consulte `docs/llm-codegen.md` e `docs/especificacoes-tecnicas/llm-auto-extensao.md`.

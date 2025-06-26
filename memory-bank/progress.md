@@ -1,14 +1,17 @@
-# Progress – Auto-Extensão MCP (25/06/2025)
+# Progress – Auto-Extensão MCP (26/06/2025)
 
-## Observabilidade Avançada
+## Geração Automática de Código via LLM
 
-- Instrumentação real concluída em todos os componentes core (capability_analyzer, tool_generator, tool_validator, self_learning, security_sandbox)
-- Build, lint e testes automatizados validados
-- Artefato de validação criado: `docs/especificacoes-tecnicas/artefatos/observability-validation-20250625.md`
-- Pendências: exposição real em ambiente integrado, atualização de exemplos e dashboards
+- Feature implementada e validada conforme planejamento
+- Instrumentação real de observabilidade (OpenTelemetry, Prometheus) aplicada
+- Testes unitários, integração e notebook validados (>80% cobertura)
+- Documentação de uso, exemplos reais e fluxo fim a fim atualizados
+- Checklist do planejamento 100% concluído
+- Memory Bank atualizado com decisões e aprendizados
 
 ## Próximos Passos
 
-- Validar exposição das métricas/tracing/logs em Prometheus/Grafana/Jaeger/Loki
-- Atualizar exemplos reais nos artefatos e dashboards
-- Checklist de conformidade final e atualização do README/onboarding
+- Monitorar uso real e feedback dos usuários
+- Evoluir para CLI e roles/escopos se necessário
+- Atualizar exemplos e dashboards conforme uso real
+- Registrar aprendizados e decisões futuras no Memory Bank

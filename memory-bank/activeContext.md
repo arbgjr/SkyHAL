@@ -1,20 +1,22 @@
-# activeContext – 25/06/2025
+# activeContext – 26/06/2025
 
 ## Foco Atual
 
-- Finalização da instrumentação de observabilidade avançada nos componentes core do sistema de auto-extensão MCP
-- Validação de build, lint e testes automatizados
-- Documentação da validação em artefato dedicado
-- Atualização do checklist de pendências da issue #11
+- Entrega final da feature de geração automática de código via LLM (SkyHAL)
+- Checklist 100% concluído conforme planejamento
+- Observabilidade, segurança, testabilidade e documentação validadas
+- Atualização do Memory Bank e documentação de decisões
 
 ## Mudanças Recentes
 
-- Instrumentação real concluída em security_sandbox.py
-- Artefato de validação criado
-- Checklist de observabilidade atualizado
+- Instrumentação OpenTelemetry e Prometheus aplicada nos pontos críticos (endpoint, orquestrador)
+- Testes unitários, integração e notebook validados (>80% cobertura)
+- Documentação de uso, exemplos reais e fluxo fim a fim atualizados
+- Checklist do planejamento marcado como concluído
 
 ## Próximos Passos
 
-- Validar exposição real das métricas/tracing/logs em ambiente integrado
-- Atualizar exemplos reais nos artefatos e dashboards
-- Checklist de conformidade final
+- Monitorar uso real e feedback dos usuários
+- Avaliar evolução para CLI e roles/escopos se necessário
+- Atualizar exemplos e dashboards conforme uso real
+- Registrar aprendizados e decisões futuras no Memory Bank
