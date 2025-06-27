@@ -1,12 +1,12 @@
 {
   "name": "SkyHAL DevContainer (Linux)",
-  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/powershell:1": {},
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11",
       "installTools": true
@@ -18,7 +18,7 @@
     "storage": "32gb"
   },
   "initializeCommand": "echo 'Inicializando DevContainer para SkyHAL'",
-  "postCreateCommand": "dotnet --version && node --version && docker --version && python --version && pip install poetry && poetry install || echo 'Instalação do Poetry finalizada com avisos'",
+  "postCreateCommand": "set -e && python --version && node --version && poetry --version && poetry install",
   "customizations": {
     "vscode": {
       "settings": {
@@ -40,7 +40,10 @@
         },
         "python.linting.enabled": true,
         "python.linting.mypyEnabled": true,
-        "black-formatter.args": ["--line-length", "88"],
+        "black-formatter.args": [
+          "--line-length",
+          "88"
+        ],
         "ruff.enable": true,
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
@@ -74,7 +77,7 @@
     }
   },
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
+    "source=${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
   ],
   "remoteUser": "vscode",
   "runArgs": [
