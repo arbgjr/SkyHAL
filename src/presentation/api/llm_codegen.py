@@ -3,6 +3,7 @@ API REST para geração de código via LLM.
 Inclui autenticação, autorização e rate limiting.
 """
 import os
+from typing import Optional
 
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -15,6 +16,7 @@ from slowapi.util import get_remote_address
 
 from src.application.llm_code_orchestrator import CodeGenRequest, LLMCodeOrchestrator
 from src.infrastructure.llm_client import LLMClient
+from src.infrastructure.llm_client_myai import MyAILLMClient
 
 router = APIRouter(prefix="/llm-codegen", tags=["llm-codegen"])
 logger = structlog.get_logger()
@@ -23,13 +25,28 @@ logger = structlog.get_logger()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 limiter = Limiter(key_func=get_remote_address)
 
-# Instanciação dos serviços (ajustar para DI real se necessário)
-llm_client = LLMClient(
-    base_url=os.getenv("LLM_API_URL", "https://api.openai.com"),
-    api_key=os.getenv("LLM_API_KEY", ""),
-    model=os.getenv("LLM_MODEL", "gpt-4"),
-)
-orchestrator = LLMCodeOrchestrator(llm_client)
+
+def get_llm_client(llm_config: Optional[dict] = None) -> LLMClient:
+    """Seleciona o client LLM conforme provider informado no payload/config."""
+    provider = (
+        (llm_config or {}).get("provider", os.getenv("LLM_PROVIDER", "openai")).lower()
+    )
+    if provider == "myai":
+        # MyAILLMClient deve herdar de LLMClient
+        client = MyAILLMClient(
+            base_url=os.getenv("LLM_API_URL", ""),
+            api_key=os.getenv("LLM_API_KEY", ""),
+            model=os.getenv("LLM_MODEL", "o4-mini"),
+        )
+        # Garantir que o tipo é compatível
+        return client
+    # Default: OpenAI
+    return LLMClient(
+        base_url=os.getenv("LLM_API_URL", "https://api.openai.com"),
+        api_key=os.getenv("LLM_API_KEY", ""),
+        model=os.getenv("LLM_MODEL", "gpt-4"),
+    )
+
 
 llm_codegen_requests = Counter(
     "llm_codegen_requests_total",
@@ -74,6 +91,10 @@ async def generate_code(request: Request, req: CodeGenRequest) -> dict:
             span.set_attribute("user_ip", client_ip)
             span.set_attribute("prompt_len", len(req.prompt) if req.prompt else 0)
             try:
+                # Seleção dinâmica do client conforme provider no payload
+                llm_config = getattr(req, "extra_params", None) or {}
+                client = get_llm_client(llm_config=llm_config.get("llm_config", {}))
+                orchestrator = LLMCodeOrchestrator(client)
                 code = await orchestrator.generate_code(req)
                 logger.info("llm_codegen_success", user=client_ip, prompt=req.prompt)
                 llm_codegen_requests.labels(status="success").inc()

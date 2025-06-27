@@ -440,6 +440,39 @@ Content-Type: application/json
 
 ## Exemplo: Geração de Código via LLM (API REST)
 
+### Integração com MyAI (LLM próprio)
+
+#### Configuração de ambiente
+
+Adicione ao seu `.env`:
+
+```env
+LLM_API_URL=http://localhost:8080/api/v3/chat/completions
+LLM_API_KEY=xyxabc123
+LLM_MODEL=o4-mini
+```
+
+#### Exemplo de payload para MyAI
+
+```json
+{
+  "provider": "llm",
+  "llm_config": {
+    "provider": "myai",
+    "model": "o4-mini"
+  },
+  "name": "soma",
+  "description": "Função que soma dois números inteiros"
+}
+```
+
+#### Observações
+
+- O campo de resposta relevante é `message.content`.
+- O client remove o markdown ```python do início/fim.
+- O system prompt é adaptado para garantir resposta só com código, sem explicação.
+- Consulte `docs/llm-codegen.md` para detalhes de extensão e exemplos de client customizado.
+
 ### Requisição
 
 ```bash

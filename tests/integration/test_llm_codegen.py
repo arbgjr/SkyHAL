@@ -38,12 +38,12 @@ def test_generate_code_semantic_validation(client, monkeypatch):
         return "# apenas comentário, sem função"
 
     # Patcha o llm_client já instanciado no módulo da API
-    from src.presentation.api import llm_codegen
+    from src.infrastructure import llm_client
 
     monkeypatch.setattr(
-        llm_codegen.llm_client,
+        llm_client.LLMClient,
         "generate_code",
-        fake_generate_code,
+        lambda self, *a, **kw: fake_generate_code(),
     )
     resp = client.post(
         "/llm-codegen/generate", json={"prompt": "crie uma função"}, headers=headers
