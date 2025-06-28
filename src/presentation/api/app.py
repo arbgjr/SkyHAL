@@ -1,7 +1,7 @@
 """Módulo de configuração da aplicação FastAPI."""
 from fastapi import FastAPI
 
-from .routers import auto_extension, health
+from .routers import auto_extension, health, llm_codegen
 
 
 def create_app(testing: bool = False) -> FastAPI:
@@ -24,6 +24,7 @@ def create_app(testing: bool = False) -> FastAPI:
     # Incluindo rotas
     app.include_router(health.router, tags=["health"])
     app.include_router(auto_extension.router)
+    app.include_router(llm_codegen.router)
 
     # TODO: Configurar observabilidade quando o middleware estiver pronto
     # Middleware de observabilidade será adicionado aqui

@@ -1,74 +1,75 @@
 """
-Testes de integração para o endpoint de geração de código via LLM.
+Testes unitários para o orquestrador de geração de código via LLM.
 """
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
-from src.presentation.api.llm_codegen import router
-
-app = FastAPI()
-app.include_router(router)
+from src.application.llm_code_orchestrator import CodeGenRequest, LLMCodeOrchestrator
 
 
-@pytest.fixture
-def client():
-    return TestClient(app)
+class MockLLMClient:
+    """Cliente LLM simulado para testes."""
+
+    def __init__(self, output=None, error=None):
+        self.output = output or "def example_function():\n    return 'Hello, world!'"
+        self.error = error
+        self.calls = []
+
+    async def generate_code(self, *args, **kwargs):
+        self.calls.append((args, kwargs))
+        if self.error:
+            raise self.error
+        return self.output
 
 
-def test_generate_code_unauthorized(client):
-    resp = client.post("/llm-codegen/generate", json={"prompt": "print('oi')"})
-    assert resp.status_code == 401
+@pytest.mark.asyncio
+async def test_validate_short_prompt():
+    """Testa validação de prompt muito curto."""
+    client = MockLLMClient()
+    orchestrator = LLMCodeOrchestrator(client)
+
+    with pytest.raises(ValueError) as excinfo:
+        await orchestrator.generate_code(CodeGenRequest(prompt="oi"))
+
+    assert "curto" in str(excinfo.value)
+    assert not client.calls  # Cliente não deve ser chamado
 
 
-def test_generate_code_invalid_prompt(client):
-    # Simula autenticação fake
-    headers = {"Authorization": "Bearer fake"}
-    resp = client.post("/llm-codegen/generate", json={"prompt": "oi"}, headers=headers)
-    assert resp.status_code == 400
-    assert "curto" in resp.json()["detail"]
+@pytest.mark.asyncio
+async def test_validate_semantics_no_function():
+    """Testa validação semântica quando não há função no código."""
+    client = MockLLMClient(output="# apenas comentário, sem função")
+    orchestrator = LLMCodeOrchestrator(client)
+
+    with pytest.raises(ValueError) as excinfo:
+        await orchestrator.generate_code(CodeGenRequest(prompt="crie uma função"))
+
+    assert "função Python" in str(excinfo.value)
+    assert len(client.calls) == 1  # Cliente deve ser chamado uma vez
 
 
-def test_generate_code_semantic_validation(client, monkeypatch):
-    # Simula autenticação fake
-    headers = {"Authorization": "Bearer fake"}
+@pytest.mark.asyncio
+async def test_quota_limit():
+    """Testa erro quando o limite de quota é atingido."""
+    client = MockLLMClient(error=RuntimeError("Limite de uso do LLM atingido"))
+    orchestrator = LLMCodeOrchestrator(client)
 
-    # Monkeypatch para forçar resposta sem função Python
-    async def fake_generate_code(*a, **kw):
-        return "# apenas comentário, sem função"
+    with pytest.raises(RuntimeError) as excinfo:
+        await orchestrator.generate_code(CodeGenRequest(prompt="crie uma função"))
 
-    # Patcha o llm_client já instanciado no módulo da API
-    from src.infrastructure import llm_client
+    assert "Limite de uso" in str(excinfo.value)
+    assert len(client.calls) == 1  # Cliente deve ser chamado uma vez
 
-    monkeypatch.setattr(
-        llm_client.LLMClient,
-        "generate_code",
-        lambda self, *a, **kw: fake_generate_code(),
+
+@pytest.mark.asyncio
+async def test_successful_code_generation():
+    """Testa geração de código bem-sucedida."""
+    expected_code = "def hello_world():\n    return 'Hello, world!'"
+    client = MockLLMClient(output=expected_code)
+    orchestrator = LLMCodeOrchestrator(client)
+
+    result = await orchestrator.generate_code(
+        CodeGenRequest(prompt="crie uma função de saudação")
     )
-    resp = client.post(
-        "/llm-codegen/generate", json={"prompt": "crie uma função"}, headers=headers
-    )
-    assert resp.status_code == 400
-    assert "função Python" in resp.json()["detail"]
 
-
-def test_generate_code_quota_limit(client, monkeypatch):
-    # Simula autenticação fake
-    headers = {"Authorization": "Bearer fake"}
-
-    # Monkeypatch para simular quota excedida
-    def fake_generate_code(*a, **kw):
-        raise RuntimeError("Limite de uso do LLM atingido")
-
-    from src.application import llm_code_orchestrator
-
-    monkeypatch.setattr(
-        llm_code_orchestrator.LLMCodeOrchestrator,
-        "generate_code",
-        lambda self, req: fake_generate_code(),
-    )
-    resp = client.post(
-        "/llm-codegen/generate", json={"prompt": "crie uma função"}, headers=headers
-    )
-    assert resp.status_code == 400
-    assert "Limite de uso" in resp.json()["detail"]
+    assert result == expected_code
+    assert len(client.calls) == 1  # Cliente deve ser chamado uma vez

@@ -1,6 +1,7 @@
 ---
+mode: agent
 description: "Agente com memória persistente e pensamento sequencial"
-tools: ['cognitive-agent', 'codebase', 'terminalSelection']
+tools: ['cognitive-agent', 'codebase', 'terminalSelection', 'filesystem']
 ---
 
 # Agente com Memória Persistente

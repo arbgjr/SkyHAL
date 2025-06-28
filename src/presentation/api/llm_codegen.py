@@ -34,8 +34,11 @@ def get_llm_client(llm_config: Optional[dict] = None) -> LLMClient:
     if provider == "myai":
         # MyAILLMClient deve herdar de LLMClient
         client = MyAILLMClient(
-            base_url=os.getenv("LLM_API_URL", ""),
-            api_key=os.getenv("LLM_API_KEY", ""),
+            base_url=os.getenv(
+                "LLM_API_URL", "http://localhost:4242/api/v0/chat/completions"
+            ),
+            api_key=os.getenv("LLM_API_KEY", "42m4n)0-2063210-824n)40-6u1m42435jun102"),
+            family=os.getenv("LLM_FAMILY", "openai"),
             model=os.getenv("LLM_MODEL", "o4-mini"),
         )
         # Garantir que o tipo é compatível
@@ -43,7 +46,8 @@ def get_llm_client(llm_config: Optional[dict] = None) -> LLMClient:
     # Default: OpenAI
     return LLMClient(
         base_url=os.getenv("LLM_API_URL", "https://api.openai.com"),
-        api_key=os.getenv("LLM_API_KEY", ""),
+        api_key=os.getenv("LLM_API_KEY", "42m4n)0-2063210-824n)40-6u1m42435jun102"),
+        family=os.getenv("LLM_FAMILY", "openai"),
         model=os.getenv("LLM_MODEL", "gpt-4"),
     )
 

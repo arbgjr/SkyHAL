@@ -1,6 +1,7 @@
 ---
 description: "Arquiteto de software com memória de decisões"
-tools: ['memory-system', 'reasoning-tools', 'git']
+mode: "agent"
+tools: ['architecture', 'architecture-reviewer', 'development', 'memory-system', 'reasoning-tools', 'security', 'changes', 'codebase', 'editFiles', 'fetch', 'filesystem', 'git']
 ---
 
 # Arquiteto de Software

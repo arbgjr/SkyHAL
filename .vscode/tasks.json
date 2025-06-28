@@ -6,11 +6,16 @@
             "type": "shell",
             "windows": {
                 "command": "pwsh",
-                "args": ["-File", "${workspaceFolder}/.scripts/git-sync.ps1"]
+                "args": [
+                    "-File",
+                    "${workspaceFolder}/.scripts/git-sync.ps1"
+                ]
             },
             "linux": {
                 "command": "/bin/bash",
-                "args": ["${workspaceFolder}/.scripts/git-sync.sh"]
+                "args": [
+                    "${workspaceFolder}/.scripts/git-sync.sh"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -22,11 +27,16 @@
             "type": "shell",
             "windows": {
                 "command": "pwsh",
-                "args": ["-File", "${workspaceFolder}/.scripts/build.ps1"]
+                "args": [
+                    "-File",
+                    "${workspaceFolder}/.scripts/build.ps1"
+                ]
             },
             "linux": {
                 "command": "/bin/bash",
-                "args": ["${workspaceFolder}/.scripts/build.sh"]
+                "args": [
+                    "${workspaceFolder}/.scripts/build.sh"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -39,11 +49,16 @@
             "type": "shell",
             "windows": {
                 "command": "pwsh",
-                "args": ["-File", "${workspaceFolder}/.scripts/test.ps1"]
+                "args": [
+                    "-File",
+                    "${workspaceFolder}/.scripts/test.ps1"
+                ]
             },
             "linux": {
                 "command": "/bin/bash",
-                "args": ["${workspaceFolder}/.scripts/test.sh"]
+                "args": [
+                    "${workspaceFolder}/.scripts/test.sh"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -56,11 +71,16 @@
             "type": "shell",
             "windows": {
                 "command": "pwsh",
-                "args": ["-File", "${workspaceFolder}/.scripts/lint.ps1"]
+                "args": [
+                    "-File",
+                    "${workspaceFolder}/.scripts/lint.ps1"
+                ]
             },
             "linux": {
                 "command": "/bin/bash",
-                "args": ["${workspaceFolder}/.scripts/lint.sh"]
+                "args": [
+                    "${workspaceFolder}/.scripts/lint.sh"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -68,7 +88,7 @@
             "problemMatcher": [],
             "group": "test"
         },
-       {
+        {
             "label": "Validar Integrações de Arquivos",
             "type": "shell",
             "windows": {
@@ -125,11 +145,16 @@
             "type": "shell",
             "windows": {
                 "command": "pwsh",
-                "args": ["-File", "${workspaceFolder}/.scripts/memory-bank-status.ps1"]
+                "args": [
+                    "-File",
+                    "${workspaceFolder}/.scripts/memory-bank-status.ps1"
+                ]
             },
             "linux": {
                 "command": "/bin/bash",
-                "args": ["${workspaceFolder}/.scripts/memory-bank-status.sh"]
+                "args": [
+                    "${workspaceFolder}/.scripts/memory-bank-status.sh"
+                ]
             },
             "presentation": {
                 "echo": true,
@@ -265,6 +290,29 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "label": "Gerar devcontainer.local.json",
+            "type": "shell",
+            "windows": {
+                "command": "pwsh",
+                "args": [
+                    "-File",
+                    ".scripts/generate-devcontainer-local.ps1"
+                ]
+            },
+            "linux": {
+                "command": "/bin/bash",
+                "args": [
+                    "-c",
+                    "pwsh -File .scripts/generate-devcontainer-local.ps1"
+                ]
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
         }
     ]
 }

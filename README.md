@@ -390,6 +390,46 @@ Para instruções detalhadas, consulte [docs/devcontainer-setup.md](docs/devcont
 
 Consulte nossa documentação detalhada ou abra uma issue descrevendo o problema encontrado.
 
+# SkyHAL
+
+> Ambiente DevContainer portável para Windows e WSL2
+
+## 🚀 Como configurar o SSH no DevContainer
+
+O arquivo `.devcontainer/devcontainer.json` é portável, mas o mount do SSH pode variar conforme o ambiente (Windows ou WSL2).
+
+### Passo a passo
+
+1. **Execute a task para gerar o arquivo local:**
+   - No VS Code, pressione `Ctrl+Shift+P` e busque por `Tasks: Run Task`.
+   - Selecione **Gerar devcontainer.local.json**.
+   - Isso irá criar/atualizar `.devcontainer/devcontainer.local.json` com o caminho correto do SSH para seu ambiente.
+
+2. **Feche o Dev Container completamente** (Ctrl+Shift+P > Dev Containers: Fechar janela remota).
+
+3. **Abra o projeto no Dev Container novamente.**
+   - O VS Code deve detectar automaticamente o arquivo local.
+   - **Se não detectar:**
+     - Use `Ctrl+Shift+P > Dev Containers: Reabrir na janela de contêiner com arquivo de definição diferente...`
+     - Selecione `.devcontainer/devcontainer.local.json`.
+
+4. **Importante:**
+   - O arquivo `.devcontainer/devcontainer.local.json` está no `.gitignore` e não deve ser versionado.
+   - Se mudar de máquina ou ambiente, execute novamente a task.
+
+---
+
+## 🛠️ Task disponível
+
+- **Gerar devcontainer.local.json**: Gera o arquivo local de configuração do DevContainer com o mount correto do SSH.
+
+---
+
+## 📝 Observações
+
+- Se precisar de customizações adicionais, edite apenas o `.devcontainer/devcontainer.local.json`.
+- O arquivo principal (`devcontainer.json`) permanece portável para todo o time.
+
 ## 4. Exemplo de Uso: Geração de Ferramenta via LLM/Template
 
 ### Requisição para o endpoint `/auto-extension/tools`
@@ -498,7 +538,7 @@ curl -X POST http://localhost:8000/llm-codegen/generate \
 
 ### Observabilidade
 
-- Todas as requisições são rastreadas via OpenTelemetry (trace_id incluso na resposta)
+- Todas as requisições são rastreadas via OpenTelemetry (trace_id incluido na resposta)
 - Métricas Prometheus: `llm_codegen_requests_total`, `llm_codegen_latency_seconds`
 - Logs estruturados (structlog) com contexto de usuário, prompt e status
 

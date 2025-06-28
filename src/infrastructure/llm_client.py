@@ -15,7 +15,8 @@ class LLMClient:
         self,
         base_url: str,
         api_key: str,
-        model: str = "gpt-4",
+        family: str = "openai",
+        model: str = "o4-mini",
         timeout: int = 30,
         max_retries: int = 3,
         quota_limit: int = 1000,
@@ -24,6 +25,7 @@ class LLMClient:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.model = model
+        self.family = family
         self.timeout = timeout
         self.max_retries = max_retries
         self.quota_limit = quota_limit
@@ -41,6 +43,7 @@ class LLMClient:
             logger.warning("Limite de uso do LLM atingido", quota=self.quota_limit)
             raise RuntimeError("Limite de uso do LLM atingido")
         payload = {
+            "family": self.config.get("family", self.family),
             "model": self.config.get("model", self.model),
             "prompt": prompt,
             "temperature": self.config.get("temperature", temperature),

@@ -9,9 +9,15 @@ from src.infrastructure.llm_client import LLMClient
 class MyAILLMClient(LLMClient):
     """Cliente LLM específico para MyAI que herda de LLMClient."""
 
-    def __init__(self, base_url: str, api_key: str, model: str = "o4-mini") -> None:
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str,
+        family: str = "openai",
+        model: str = "o4-mini",
+    ) -> None:
         """Inicializa o cliente MyAI."""
-        super().__init__(base_url=base_url, api_key=api_key, model=model)
+        super().__init__(base_url=base_url, api_key=api_key, family=family, model=model)
         # Configurações específicas do MyAI podem ser adicionadas aqui
 
     async def generate_code(
@@ -133,7 +139,7 @@ APPROVED LIBRARIES:
 
         payload = {
             "knowledge_base": None,
-            "llm_family": "openai",
+            "llm_family": self.family,
             "model": self.model,
             "max_output_tokens": max_tokens,
             "messages": [

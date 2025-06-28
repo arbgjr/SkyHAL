@@ -202,5 +202,11 @@
   "mcp.servers.memory.env": {
     "MEMORY_FILE_PATH": ".\\.memory\\memory.json",
     "MEMORY_BACKUP_INTERVAL": "3600"
+  },
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "host": "LLM_API_URL",
+      "secretKey": "LLM_API_KEY"
+    }
   }
 }
